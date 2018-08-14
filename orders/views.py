@@ -5,9 +5,11 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
+# check email function
 import re
 def check_email(email):
   return bool(re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email))
+
 
 # Create your views here.
 def index(request):
@@ -16,7 +18,8 @@ def index(request):
     context = {
     "user" : request.user
     }
-    return HttpResponse("Project 3: TODO")
+    # return HttpResponse("Project 3: TODO")
+    return HttpResponse(request.user.id)
 
 def login_view(request):
     if request.method == "GET":
@@ -62,7 +65,3 @@ def register_view(request):
                 return render(request, "orders/register.html", {"message" : "Error in user registration"})
         else:
             return render(request, "orders/register.html", {"message" : "Check user credentials"})
-
-@login_required(login_url='/login')
-def test(request):
-    return HttpResponse("HI")
