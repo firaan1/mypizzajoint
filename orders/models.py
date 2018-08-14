@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Size(models.Model):
@@ -64,3 +65,35 @@ class DinnerPlatterRate(models.Model):
     price = models.DecimalField(max_digits = 6, decimal_places = 2)
     def __str__(self):
         return f"{self.dinnerplattersize} sized {self.dinnerplatterchoice} cost ${self.price}"
+
+class OrderPizza(models.Model):
+    user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "pizza_user", null = True)
+    pizzachoice = models.ForeignKey(PizzaRate, on_delete = models.SET_NULL, related_name = "pizza_choice", null = True)
+    toppingchoice = models.ManyToManyField(ToppingChoice, related_name = "pizza_topping")
+    def __str__(self):
+        return f"{self.user} : {self.pizzachoice} with {self.toppingchoice}"
+
+class OrderSub(models.Model):
+    user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "sub_user", null = True)
+    subchoice = models.ForeignKey(SubRate, on_delete = models.SET_NULL, related_name = "sub_choice", null = True)
+    subextra = models.ManyToManyField(SubExtra, related_name = "sub_extra")
+    def __str__(self):
+        return f"{self.user} : {self.subchoice} with {self.subextra}"
+
+class OrderPasta(models.Model):
+    user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "pasta_user", null = True)
+    pastachoice = models.ForeignKey(PastaRate, on_delete = models.SET_NULL, related_name = "pasta_choice", null = True)
+    def __str__(self):
+        return f"{self.user} : {self.pastachoice}"
+
+class OrderSalad(models.Model):
+    user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "salad_user", null = True)
+    saladchoice = models.ForeignKey(SaladRate, on_delete = models.SET_NULL, related_name = "salad_choice", null = True)
+    def __str__(self):
+        return f"{self.user} : {self.saladchoice}"
+
+class OrderDinnerPlatter(models.Model):
+    user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "dinnerplatter_user", null = True)
+    dinnerplatterchoice = models.ForeignKey(DinnerPlatterRate, on_delete = models.SET_NULL, related_name = "dinnerplatter_choice", null = True)
+    def __str__(self):
+        return f"{self.user} : {self.dinnerplatterchoice}"
