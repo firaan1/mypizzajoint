@@ -19,7 +19,7 @@ def index(request):
     "user" : request.user
     }
     # return HttpResponse("Project 3: TODO")
-    return HttpResponse(request.user.id)
+    return render(request, "orders/index.html") 
 
 def login_view(request):
     if request.method == "GET":
