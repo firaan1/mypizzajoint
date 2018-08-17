@@ -1,0 +1,132 @@
+{% extends "orders/layout.html" %}
+
+{% block title %}
+Pizza & Subs
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div>
+    <a class="menubtn" id="pizza" href="#">Pizza</a>
+    <a class="menubtn" id="subs" href="#">Subs</a>
+    <a class="menubtn" id="pasta" href="#">Pasta</a>
+    <a class="menubtn" id="salad" href="#">Salad</a>
+    <a class="menubtn" id="dinnerplatter" href="#">Dinner Platter</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="yourorder" data-ordertable="pizza">
+  </div>
+
+  <div class="menu" data-id="pizza">
+    pizza
+    <div id="current_pizza_orders">
+    </div>
+
+    <div class="form-group">
+      <button type="button" class="btn btn-primary" id="add_pizza">Add Pizza</button>
+    </div>
+
+    <div id="make_pizza_order">
+      <form>
+        <div id="dpizzatype" class="form-group make_pizza_order">
+          <label for="spizzatype">Pizza Type</label>
+          <select id="spizzatype" class="form-control">
+            <option value="" selected disabled>Select Pizza Type</option>
+            {% for ptype in pizzatype %}
+              <option value="{{ptype.0}}">{{ptype.1}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div id="dpizzasize" class="form-group make_pizza_order">
+          <label for="spizzasize">Pizza Size</label>
+          <select id="spizzasize" class="form-control">
+            <option value="" selected disabled>Select Pizza Size</option>
+            {% for psize in pizzasize %}
+              <option value="{{psize.0}}">{{psize.1}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div id="dtoppingtype" class="form-group make_pizza_order">
+          <label for="stoppingtype">Topping Type</label>
+          <select id="stoppingtype" class="form-control">
+            <option value="" selected disabled>Select Topping Type</option>
+            {% for ttype in toppingtype %}
+              <option value="{{ttype.0}}">{{ttype.1}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div id="dtoppingchoice" class="form-check make_pizza_order">
+          <label for="itoppingchoice">Topping Choice</label>
+          {% for tchoice in toppingchoice %}
+          <input class="form-check-input itoppingchoice" type="checkbox" value="{{tchoice.0}}">{{tchoice.1}}<br>
+          {% endfor %}
+        </div>
+    </form>
+    </div>
+
+  </div>
+
+
+  <!--  -->
+
+  <div class="menu"  data-id="subs">
+    subs
+  </div>
+  <div class="menu"  data-id="pasta">
+    pasta
+  </div>
+  <div class="menu" data-id="salad">
+    salad
+  </div>
+  <div class="menu" data-id="dinnerplatter">
+    dinnerplatter
+  </div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // remove divs
+    document.querySelectorAll('.menu').forEach(div => { div.style.display = "none"; })
+
+    // menu anchors
+    document.querySelectorAll('.menubtn').forEach(anchor => {
+      anchor.onclick = () => {
+        const anchor_src = anchor.id
+        // remove divs
+        document.querySelectorAll('.menu').forEach(div => {
+          if (anchor_src === div.dataset.id) {
+            div.style.display = "block";
+          } else {
+            div.style.display = "none";
+          }
+        });
+    };
+  });
+
+
+  // add pizza
+  document.querySelectorAll('.make_pizza_order').forEach(item => { item.style.display = "none";});
+  document.querySelector('#add_pizza').onclick = () => {
+    document.querySelectorAll('.make_pizza_order').forEach(item => { item.style.display = "block";});
+    const tchoice = document.querySelector('#dtoppingchoice');
+    const ttype = document.querySelector('#stoppingtype');
+
+    // removing topping choice
+    tchoice.style.display = "none";
+
+    // selecting topping type
+    ttype.onselect
+
+
+  }
+
+
+  });
+
+</script>
+
+{% endblock %}

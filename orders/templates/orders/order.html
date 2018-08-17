@@ -1,0 +1,118 @@
+{% extends "orders/layout.html" %}
+
+{% block title %}
+Pizza & Subs
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div>
+    <a class="menubtn" id="pizza" href="#">Pizza</a>
+    <a class="menubtn" id="subs" href="#">Subs</a>
+    <a class="menubtn" id="pasta" href="#">Pasta</a>
+    <a class="menubtn" id="salad" href="#">Salad</a>
+    <a class="menubtn" id="dinnerplatter" href="#">Dinner Platter</a>
+  </div>
+</div>
+<div class="container">
+  <div class="yourorder" data-ordertable="pizza">
+  </div>
+
+  <div class="menu" data-id="pizza">
+    pizza
+    <div id="current_pizza_orders">
+    </div>
+
+    <div class="form-group">
+      <button type="button" class="btn btn-primary" id="add_pizza">Add Pizza</button>
+    </div>
+
+    <div id="make_pizza_order">
+      <form id="make_pizza_order_form">
+      </form>
+    </div>
+
+  </div>
+
+
+  <!--  -->
+
+  <div class="menu"  data-id="subs">
+    subs
+  </div>
+  <div class="menu"  data-id="pasta">
+    pasta
+  </div>
+  <div class="menu" data-id="salad">
+    salad
+  </div>
+  <div class="menu" data-id="dinnerplatter">
+    dinnerplatter
+  </div>
+</div>
+
+<!--  -->
+{% verbatim %}
+<script id="select_template" type="text/x-handlebars-template">
+  <div id="d{{vartype}}" class="form-group make_pizza_order">
+    <label for="s{{vartype}}">{{vartype}}</label>
+    <select id="s{{vartype}}" class="form-control">
+      <option value="" name="" disabled selected>{{vartype}}</option>
+      {{#each varlist}}
+      <option value="{{@key}}" name="{{this}}">{{this}}</option>
+      {{/each}}
+    </select>
+  </div>
+</script>
+{% endverbatim %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+
+    // handlebar template
+    const select_template = Handlebars.compile(document.querySelector('#select_template').innerHTML);
+
+    // remove divs
+    document.querySelectorAll('.menu').forEach(div => { div.style.display = "none"; })
+
+    // menu anchors
+    document.querySelectorAll('.menubtn').forEach(anchor => {
+      anchor.onclick = () => {
+        const anchor_src = anchor.id
+        // remove divs
+        document.querySelectorAll('.menu').forEach(div => {
+          if (anchor_src === div.dataset.id) {
+            div.style.display = "block";
+          } else {
+            div.style.display = "none";
+          }
+        });
+    };
+  });
+
+  // pizza populate
+  document.querySelector('#make_pizza_order_form').innerHTML += select_template({'vartype' : 'PizzaType', 'varlist' : {{pizzatype|safe}} });
+  document.querySelector('#make_pizza_order_form').innerHTML += select_template({'vartype' : 'PizzaSize', 'varlist' : {{pizzasize|safe}} });
+  document.querySelector('#make_pizza_order_form').innerHTML += select_template({'vartype' : 'ToppingType', 'varlist' : {{toppingtype|safe}} });
+
+  // add pizza
+  document.querySelectorAll('.make_pizza_order').forEach(item => { item.style.display = "none";});
+  document.querySelector('#add_pizza').onclick = () => {
+    document.querySelectorAll('.make_pizza_order').forEach(item => {
+      item.style.display = "block";
+    });
+  }
+
+  // select topping
+  document.querySelector('#sToppingType').onchange = () => {
+    const toppingtype = document.querySelector('#sToppingType')
+    alert(toppingtype.options[toppingtype.selectedIndex].getAttribute('name'));
+
+  }
+
+
+  });
+
+</script>
+
+{% endblock %}
