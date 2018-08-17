@@ -55,7 +55,7 @@ Pizza & Subs
 <script id="select_template" type="text/x-handlebars-template">
   <div id="d{{vartype}}" class="form-group make_pizza_order">
     <label for="s{{vartype}}">{{vartype}}</label>
-    <select id="s{{vartype}}" class="form-control make_pizza_order_select" name="{{toLowerCase vartype}}">
+    <select id="s{{vartype}}" class="form-control make_pizza_order_select">
       <option value="" name="" disabled selected>{{vartype}}</option>
       {{#each varlist}}
       <option value="{{@key}}" name="{{this}}">{{this}}</option>
@@ -65,8 +65,17 @@ Pizza & Subs
 </script>
 <script id="button_template" type="text/x-handlebars-template">
   <div class="form-group make_pizza_order">
-    <span id="price_{{menutype}}"></span>
     <button id="btn_cart_{{menutype}}" type="button" class="btn btn-primary" disabled>Add to Cart</button>
+  </div>
+</script>
+<script id="checkbox_template" type="text/x-handlebars-template">
+  <div class="form-check" id="d{{vartype}}">
+    {{#each varlist}}
+    <input class="form-check-input c{{../vartype}}" type="checkbox" value="{{@key}}">
+    <label class="form-check-label" for="{{../vartype}}">
+      {{this}}
+    </label>
+    {{/each}}
   </div>
 </script>
 {% endverbatim %}
@@ -74,13 +83,10 @@ Pizza & Subs
 <script>
   document.addEventListener('DOMContentLoaded', () => {
 
-    Handlebars.registerHelper('toLowerCase', function(str) {
-      return str.toLowerCase();
-    });
-
     // handlebar template
     const select_template = Handlebars.compile(document.querySelector('#select_template').innerHTML);
     const button_template = Handlebars.compile(document.querySelector('#button_template').innerHTML);
+    const checkbox_template = Handlebars.compile(document.querySelector('#checkbox_template').innerHTML);
 
     // remove divs
     document.querySelectorAll('.menu').forEach(div => { div.style.display = "none"; })
@@ -107,90 +113,84 @@ Pizza & Subs
   make_pizza_order_form.innerHTML += select_template({'vartype' : 'ToppingType', 'varlist' : {{toppingtype|safe}} });
 
   // toping choice
-  make_pizza_order_form.innerHTML += select_template({ 'vartype' : 'ToppingChoice', 'varlist' : {{toppingchoice|safe}} });
+  make_pizza_order_form.innerHTML += checkbox_template({ 'vartype' : 'ToppingChoice', 'varlist' : {{toppingchoice|safe}} });
 
   // add to cart button
   make_pizza_order_form.innerHTML += button_template({'menutype' : 'pizza'})
 
   // add pizza
   document.querySelectorAll('.make_pizza_order').forEach(item => { item.style.display = "none";});
-
+  toppingchoice =   document.querySelector('#dToppingChoice');
+  toppingchoice.style.display = "none";
   document.querySelector('#add_pizza').onclick = () => {
     // variables
-    pizzarate = {{pizzarate|safe}}
     const pizzatype = document.querySelector('#sPizzaType');
     const pizzasize = document.querySelector('#sPizzaSize');
     const toppingtype = document.querySelector('#sToppingType');
     const btn_cart_pizza = document.querySelector('#btn_cart_pizza');
-    const toppingchoice = document.querySelector('#dToppingChoice');
-
-    toppingchoice.children[1].multiple = true;
-    toppingchoice.style.display = "none";
-
 
     // show choices
     document.querySelectorAll('.make_pizza_order').forEach(item => {
       // show items
       item.style.display = "block";
-      toppingchoice.style.display = "none";
     });
 
     //
     document.querySelectorAll('.make_pizza_order_select').forEach(item => {
 
-      // items on change
+      // show items
       item.onchange = () => {
         // alert(item.options[item.selectedIndex].getAttribute('name'));
 
         if(item.id === "sToppingType"){
           const toppingtypename = item.options[item.selectedIndex].getAttribute('name');
-          toppingchoice.children[1].querySelectorAll('option').forEach(option => {
-            option.selected = false;
-          })
           toppingchoice.style.display = "block";
           switch(toppingtypename){
             case 'Cheese':
-              checkbox_limit = 0;
+              var checkbox_limit = 0;
+              toppingchoice.style.display = "none";
               break;
             case '1 topping':
-              checkbox_limit = 1;
+              var checkbox_limit = 1;
               break;
             case '2 toppings':
-              checkbox_limit = 2;
+              var checkbox_limit = 2;
               break;
             case '3 toppings':
-              checkbox_limit = 3;
+              var checkbox_limit = 3;
               break;
             case 'Special':
-              checkbox_limit = 5;
+              var checkbox_limit = 5;
               break;
             default:
-              checkbox_limit = 0;
+              var checkbox_limit = 0;
+              toppingchoice.style.display = "none";
               break
           }
 
-          if(checkbox_limit === 0){
-            toppingchoice.style.display = "none";
+          if(checkbox_limit != 0){
+            var checkbox_count = 0
+            toppingchoice.childNodes.forEach(item => {
+              console.log(item.checked)
+            });
           }
-        } else if(item.id === "sToppingChoice"){
-          if(item.selectedOptions.length <= checkbox_limit){
 
-          } else {
-            // console.log(item.selectedIndex)
-            item.options[item.selectedIndex].selected = false;
-          }
+
+
+
+
         }
 
 
 
 
         // enable button
-        add_cart_button([pizzatype, pizzasize, toppingtype], btn_cart_pizza, pizzarate);
+        add_cart_button([pizzatype, pizzasize, toppingtype], btn_cart_pizza);
       }
 
     });
-
   }
+
 
   const pizzatype = document.querySelector('#sPizzaType');
   const pizzasize = document.querySelector('#sPizzaSize');
@@ -200,21 +200,18 @@ Pizza & Subs
 
   });
 
-  function add_cart_button(eventlist, button, rate) {
+  function add_cart_button(eventlist, button) {
     var tmpvar = 0;
-    var selected_events = {}
+
     eventlist.forEach(event => {
       if(event.value != ""){
         tmpvar += 1;
-        selected_events[event.name] = event.value;
       }
     });
     if(tmpvar == eventlist.length){
       button.disabled = false;
-      rate.forEach(event => {});
     } else {
       button.disabled = true;
-      button.parentElement.firstElementChild.innerHTML = "";
     }
   }
 

@@ -27,10 +27,6 @@ def index(request):
 
 @login_required(login_url='/login')
 def order(request):
-    # pizzatype = list(set([(x.pizzatype_id, str(x.pizzatype)) for x in PizzaRate.objects.all()]))
-    # pizzasize = list(set([(x.pizzasize_id, str(x.pizzasize)) for x in PizzaRate.objects.all()]))
-    # toppingtype = list(set([(x.toppingtype_id, str(x.toppingtype)) for x in PizzaRate.objects.all()]))
-    # toppingchoice = list([(t.pk,t.toppingchoice) for t in ToppingChoice.objects.all()])
     pizzatype,pizzasize,toppingtype = {},{},{}
     for p in PizzaRate.objects.all():
         pizzatype[p.pizzatype_id] = str(p.pizzatype)
@@ -44,7 +40,7 @@ def order(request):
     "pizzasize": json.dumps(pizzasize),
     "toppingtype": json.dumps(toppingtype),
     "toppingchoice": json.dumps(toppingchoice),
-    "pizzarate": PizzaRate.objects.all()
+    "pizzarate": serialize("json",PizzaRate.objects.all())
     }
     return render(request, "orders/order.html", context)
 
