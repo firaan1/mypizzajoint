@@ -15,6 +15,23 @@ import re
 def check_email(email):
   return bool(re.search(r"^[\w\.\+\-]+\@[\w]+\.[a-z]{2,3}$", email))
 
+def user_cost(object):
+    total = 0
+    user_id = object.user.id
+    for order in OrderPizza.objects.filter(user_id = user_id):
+        total += order.pizzachoice.price
+    for order in OrderSub.objects.filter(user_id = user_id):
+        total += order.subchoice.price
+        # total += order.subextra.price
+    for order in OrderPasta.objects.filter(user_id = user_id):
+        total += order.pastachoice.price
+    for order in OrderSalad.objects.filter(user_id = user_id):
+        total += order.saladchoice.price
+    for order in OrderDinnerPlatter.objects.filter(user_id = user_id):
+        total += order.dinnerplatterchoice.price
+    return(total)
+
+
 # Create your views here.
 def index(request):
     if not request.user.is_authenticated:
@@ -27,6 +44,7 @@ def index(request):
 
 @login_required(login_url='/login')
 def order(request):
+    total_cost = user_cost(request)
     pizzatype,pizzasize,toppingtype = {},{},{}
     for p in PizzaRate.objects.all():
         pizzatype[p.pizzatype_id] = str(p.pizzatype)
@@ -36,6 +54,7 @@ def order(request):
     for t in ToppingChoice.objects.all():
         toppingchoice[t.pk] = str(t)
     context = {
+    "total_cost": total_cost,
     "pizzatype": json.dumps(pizzatype),
     "pizzasize": json.dumps(pizzasize),
     "toppingtype": json.dumps(toppingtype),
@@ -43,6 +62,36 @@ def order(request):
     "pizzarate": serialize("json",PizzaRate.objects.all())
     }
     return render(request, "orders/order.html", context)
+
+@login_required(login_url="/login")
+def change_order(request):
+    if request.method == "POST":
+        menutype = str(request.POST['menutype'])
+        rate_pk = str(request.POST['rate_pk'])
+        quantity = int(request.POST['quantity'])
+        others = str(request.POST['others'])
+        if others == "":
+            others = []
+        else:
+            others = others.split(",")
+        user_object = User.objects.get(pk = request.user.pk)
+        response = {}
+        if menutype == "pizza":
+            for q in range(0,quantity):
+                pizzarate_object = PizzaRate.objects.get(pk = rate_pk)
+                orderpizza = OrderPizza(user = user_object, pizzachoice = pizzarate_object)
+                orderpizza.save()
+                if others:
+                    toppingchoice_object = [ToppingChoice.objects.get(pk = o) for o in others]
+                    orderpizza.toppingchoice.set(toppingchoice_object)
+                    orderpizza.save()
+                response[orderpizza.pk] = {
+                "menutype" : "pizza",
+                "main" : str(orderpizza.pizzachoice),
+                "others" : json.loads(serialize("json",orderpizza.toppingchoice.all()))
+                }
+                del(orderpizza)
+        return HttpResponse(json.dumps(response))
 
 def login_view(request):
     if request.method == "GET":

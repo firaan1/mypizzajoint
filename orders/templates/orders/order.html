@@ -5,6 +5,7 @@ Pizza & Subs
 {% endblock %}
 
 {% block body %}
+<h2>{{total_cost}}</h2>
 <div class="container">
   <div>
     <a class="menubtn" id="pizza" href="#">Pizza</a>
@@ -66,7 +67,7 @@ Pizza & Subs
 <script id="button_template" type="text/x-handlebars-template">
   <div class="form-group make_pizza_order">
     <span id="price_{{menutype}}"></span></br>
-    <button id="btn_cart_{{menutype}}" type="button" class="btn btn-primary" disabled>Add to Cart</button>
+    <button id="btn_cart_{{menutype}}" type="button" class="btn btn-primary" data-rate_pk="" data-quantity="" data-others="" disabled>Add to Cart</button>
   </div>
 </script>
 <script id="input_template" type="text/x-handlebars-template">
@@ -181,13 +182,26 @@ Pizza & Subs
 
           if(checkbox_limit === 0){
             toppingchoice.style.display = "none";
+            btn_cart_pizza.setAttribute('data-others', '');
           }
         } else if(item.id === "sToppingChoice"){
           if(item.selectedOptions.length <= checkbox_limit){
-
+            toppingchoice_pk = [];
+            item.querySelectorAll('option').forEach(option => {
+              if(option.selected){
+                toppingchoice_pk.push(option.value);
+              }
+            });
+            btn_cart_pizza.setAttribute('data-others', toppingchoice_pk);
           } else if(item.selectedOptions.length > checkbox_limit) {
             // console.log(item.selectedIndex)
             item.options[item.selectedIndex].selected = false;
+            item.querySelectorAll('option').forEach(option => {
+              if(option.selected){
+                option.selected = false;
+              }
+            });
+            btn_cart_pizza.setAttribute('data-others', '');
             alert("Order restricted to " + String(checkbox_limit) + " item(s)");
           }
         }
@@ -203,7 +217,22 @@ Pizza & Subs
 
   // send pizza to backend
   btn_cart_pizza.onclick = () => {
-    console.log("HI")
+    const request = new XMLHttpRequest();
+    const csrftoken = getCookie('csrftoken');
+
+    request.open('POST', "change_order");
+    request.setRequestHeader("X-CSRFToken", csrftoken);
+    request.onload = () => {
+      console.log(request.responseText);
+
+    }
+    const data = new FormData();
+    data.append('menutype', 'pizza');
+    data.append('rate_pk', btn_cart_pizza.dataset.rate_pk);
+    data.append('quantity', btn_cart_pizza.dataset.quantity);
+    data.append('others', btn_cart_pizza.dataset.others);
+
+    request.send(data);
   }
 
 
@@ -232,19 +261,36 @@ Pizza & Subs
           }
         }
         if(String(counter) === String(eventlist.length)){
-          rate_span.setAttribute('data-rate_pk', event['pk'])
-          rate_span.setAttribute('data-quantity',menutype.value)
+          button.setAttribute('data-rate_pk', event['pk'])
+          button.setAttribute('data-quantity',menutype.value)
           rate_span.innerHTML = "Price: $" + event['fields']['price'];
           throw ": Catch me if you can :-P";
         }
       });
     } else {
       button.disabled = true;
-      rate_span.setAttribute('data-rate_pk', '');
+      button.setAttribute('data-rate_pk', '');
+      button.setAttribute('data-quantity', '');
       rate_span.innerHTML = "";
     }
   }
 
+  // using jQuery
+  function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+              var cookie = jQuery.trim(cookies[i]);
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
 </script>
 
 {% endblock %}
