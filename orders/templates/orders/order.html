@@ -65,8 +65,13 @@ Pizza & Subs
 </script>
 <script id="button_template" type="text/x-handlebars-template">
   <div class="form-group make_pizza_order">
-    <span id="price_{{menutype}}"></span>
+    <span id="price_{{menutype}}"></span></br>
     <button id="btn_cart_{{menutype}}" type="button" class="btn btn-primary" disabled>Add to Cart</button>
+  </div>
+</script>
+<script id="input_template" type="text/x-handlebars-template">
+  <div class="form-group make_pizza_order">
+    <input type="number" id="q_{{menutype}}" min="1" max="25" value="1" pattern="[0-9]" step="1" oninput="validity.valid||(value='');"/>
   </div>
 </script>
 {% endverbatim %}
@@ -81,6 +86,8 @@ Pizza & Subs
     // handlebar template
     const select_template = Handlebars.compile(document.querySelector('#select_template').innerHTML);
     const button_template = Handlebars.compile(document.querySelector('#button_template').innerHTML);
+    const input_template = Handlebars.compile(document.querySelector('#input_template').innerHTML);
+
 
     // remove divs
     document.querySelectorAll('.menu').forEach(div => { div.style.display = "none"; })
@@ -109,8 +116,10 @@ Pizza & Subs
   // toping choice
   make_pizza_order_form.innerHTML += select_template({ 'vartype' : 'ToppingChoice', 'varlist' : {{toppingchoice|safe}} });
 
+  // adding quantity
+  make_pizza_order_form.innerHTML += input_template({'menutype' : 'pizza'});
   // add to cart button
-  make_pizza_order_form.innerHTML += button_template({'menutype' : 'pizza'})
+  make_pizza_order_form.innerHTML += button_template({'menutype' : 'pizza'});
 
   // add pizza
   document.querySelectorAll('.make_pizza_order').forEach(item => { item.style.display = "none";});
@@ -123,6 +132,7 @@ Pizza & Subs
     const toppingtype = document.querySelector('#sToppingType');
     const btn_cart_pizza = document.querySelector('#btn_cart_pizza');
     const toppingchoice = document.querySelector('#dToppingChoice');
+    const q_pizza = document.querySelector('#q_pizza')
 
     toppingchoice.children[1].multiple = true;
     toppingchoice.style.display = "none";
@@ -175,46 +185,63 @@ Pizza & Subs
         } else if(item.id === "sToppingChoice"){
           if(item.selectedOptions.length <= checkbox_limit){
 
-          } else {
+          } else if(item.selectedOptions.length > checkbox_limit) {
             // console.log(item.selectedIndex)
             item.options[item.selectedIndex].selected = false;
+            alert("Order restricted to " + String(checkbox_limit) + " item(s)");
           }
         }
 
 
-
-
         // enable button
-        add_cart_button([pizzatype, pizzasize, toppingtype], btn_cart_pizza, pizzarate);
+        add_cart_button([pizzatype, pizzasize, toppingtype], btn_cart_pizza, pizzarate, q_pizza);
       }
 
     });
 
+  };
+
+  // send pizza to backend
+  btn_cart_pizza.onclick = () => {
+    console.log("HI")
   }
 
-  const pizzatype = document.querySelector('#sPizzaType');
-  const pizzasize = document.querySelector('#sPizzaSize');
-  const toppingtype = document.querySelector('#sToppingType');
-  const btn_cart_pizza = document.querySelector('#btn_cart_pizza');
 
 
   });
 
-  function add_cart_button(eventlist, button, rate) {
+  function add_cart_button(eventlist, button, rate, menutype) {
+    const rate_span = button.parentElement.firstElementChild;
     var tmpvar = 0;
-    var selected_events = {}
+    selected_events = {}
     eventlist.forEach(event => {
       if(event.value != ""){
         tmpvar += 1;
         selected_events[event.name] = event.value;
       }
     });
-    if(tmpvar == eventlist.length){
+    if(tmpvar === eventlist.length){
       button.disabled = false;
-      rate.forEach(event => {});
+      rate.forEach(event => {
+        let counter = 0;
+        for(item in selected_events){
+          if(String(selected_events[item]) === String(event['fields'][item])){
+            counter += 1;
+          } else {
+            break;
+          }
+        }
+        if(String(counter) === String(eventlist.length)){
+          rate_span.setAttribute('data-rate_pk', event['pk'])
+          rate_span.setAttribute('data-quantity',menutype.value)
+          rate_span.innerHTML = "Price: $" + event['fields']['price'];
+          throw ": Catch me if you can :-P";
+        }
+      });
     } else {
       button.disabled = true;
-      button.parentElement.firstElementChild.innerHTML = "";
+      rate_span.setAttribute('data-rate_pk', '');
+      rate_span.innerHTML = "";
     }
   }
 
