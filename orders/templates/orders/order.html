@@ -115,7 +115,7 @@ Pizza & Subs
       request.setRequestHeader("X-CSRFToken", csrftoken);
       request.onload = () => {
         console.log(request.responseText);
-        window.location = window.location.href;
+	location.reload();
       };
       const data = new FormData();
       data.append('menutype',button.parentElement.dataset.menutype);
@@ -349,7 +349,7 @@ Pizza & Subs
     request.setRequestHeader("X-CSRFToken", csrftoken);
     request.onload = () => {
       console.log(request.responseText);
-      window.location = window.location.href;
+      location.reload();
     }
     const data = new FormData();
     data.append('menutype', button.dataset.menutype);
