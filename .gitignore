@@ -1,3 +1,1 @@
-orders/__pycache__/
-pizza/__pycache__/
-orders/migrations/__pycache__/
+*.pyc
