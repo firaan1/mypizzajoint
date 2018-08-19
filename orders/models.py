@@ -88,6 +88,10 @@ class OrderPizza(models.Model):
     menutype = models.CharField(max_length=25, default="pizza", editable="False")
     pizzachoice = models.ForeignKey(PizzaRate, on_delete = models.SET_NULL, related_name = "pizza_choice", null = True)
     toppingchoice = models.ManyToManyField(ToppingChoice, related_name = "pizza_topping")
+    def display_toppingchoice(self):
+        return ", ".join(t.toppingchoice for t in self.toppingchoice.all())
+    def test(self):
+        return "xx"
     def __str__(self):
         return f"{self.user} : {self.pizzachoice} with {self.toppingchoice}"
 
@@ -97,7 +101,7 @@ class OrderSub(models.Model):
     subchoice = models.ForeignKey(SubRate, on_delete = models.SET_NULL, related_name = "sub_choice", null = True)
     subextrachoice = models.ManyToManyField(SubExtraRate, related_name = "subextra_choice")
     def __str__(self):
-        return f"{self.user} : {self.subchoice} with {self.subextra}"
+        return f"{self.user} : {self.subchoice} with {self.subextrachoice}"
 
 class OrderPasta(models.Model):
     user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "pasta_user", null = True)

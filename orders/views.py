@@ -24,6 +24,8 @@ def user_cost(object):
         order_list.append(order)
     for order in OrderSub.objects.filter(user_id = user_id):
         total_cost += order.subchoice.price
+        for o in order.subextrachoice.all():
+            total_cost += o.price
         order_list.append(order)
         # total_cost += order.subextra.price
     for order in OrderPasta.objects.filter(user_id = user_id):
@@ -46,13 +48,27 @@ def delete_order(menutype, pk):
 def add_order(menutype, pk, others, quantity, user):
     for q in range(0,int(quantity)):
         request_order = menu_dict[f"{menutype}rate"].objects.get(pk = pk)
-        place_order = menu_dict[menutype](user = user, pizzachoice = request_order)
+        if menutype == "pizza":
+            place_order = menu_dict[menutype](user = user, pizzachoice = request_order)
+        elif menutype == "sub":
+            place_order = menu_dict[menutype](user = user, subchoice = request_order)
+        elif menutype == "pasta":
+            place_order = menu_dict[menutype](user = user, pastachoice = request_order)
+        elif menutype == "salad":
+            place_order = menu_dict[menutype](user = user, saladchoice = request_order)
+        elif menutype == "dinnerplatter":
+            place_order = menu_dict[menutype](user = user, dinnerplatterchoice = request_order)
         place_order.save()
         if others:
             if menutype == "pizza":
                 toppingchoice = [ToppingChoice.objects.get(pk = o) for o in others]
                 place_order.toppingchoice.set(toppingchoice)
-                place_order.save()
+            if menutype == "sub":
+                subextrachoice = [SubExtraRate.objects.get(pk = o) for o in others]
+                place_order.subextrachoice.set(subextrachoice)
+            place_order.save()
+
+
 
 # Create your views here.
 def index(request):

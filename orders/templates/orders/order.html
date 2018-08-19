@@ -11,8 +11,8 @@ Pizza & Subs
   <div id="placedorders">
     <ul>
       {% for order in last_orders.order_list %}
+      <li data-menutype="{{order.menutype}}" data-pk="{{order.pk}}" data-todo="delete">
         {% if order.menutype == "pizza" %}
-        <li data-menutype="{{order.menutype}}" data-pk="{{order.pk}}" data-todo="delete">
           {{order.pizzachoice}}
           <ul>
               {% for toppingchoice in order.toppingchoice.all %}
@@ -20,17 +20,22 @@ Pizza & Subs
               {% empty %}
               {% endfor %}
           </ul>
-          <button type="button" class="btn btn-primary delete_order">delete</button>
-        </li>
         {% elif order.menutype == "sub" %}
-        <button type="button" class="btn btn-primary delete_order">delete</button>
+          {{order.subchoice}}
+          <ul>
+            {% for s in order.subextrachoice.all %}
+              <li>{{s}}</li>
+            {% endfor %}
+          </ul>
         {% elif order.menutype == "pasta" %}
-        <button type="button" class="btn btn-primary delete_order">delete</button>
+          {{order.pastachoice}}
         {% elif order.menutype == "salad" %}
-        <button type="button" class="btn btn-primary delete_order">delete</button>
+          {{order.saladchoice}}
         {% elif order.menutype == "dinnerplatter" %}
-        <button type="button" class="btn btn-primary delete_order">delete</button>
+          {{order.dinnerplatterchoice}}
         {% endif %}
+        <button type="button" class="btn btn-primary delete_order">delete</button>
+      </li>
         {% empty %}
         <li>No previous orders in cart</li>
       {% endfor %}
@@ -76,7 +81,7 @@ Pizza & Subs
   </div>
 </script>
 <script id="span_template" type="text/x-handlebars-template">
-  <span id="span_{{vartype}}" class="cspan"></span>
+  <span id="span_{{vartype}}" class="cspan" data-price=""></span>
 </script>
 <script id="input_template" type="text/x-handlebars-template">
   <div class="form-group">
@@ -247,7 +252,7 @@ Pizza & Subs
 
   // function menu
   function create_menu_functions(menutype, menurate, menuobj_dict){
-
+    init_state = false;
 // parse
   // menutype = pizza
   // menurate = pizzarate
@@ -304,8 +309,11 @@ Pizza & Subs
   } else if(menutype === "sub"){
     eventlist = []
     menutypeevents.forEach(menutypeevent => {
-      if(menutypeevent.name != "subextra"){
+      if(menutypeevent.name != "subextrachoice"){
         eventlist.push(menutypeevent);
+      } else{
+        // subextrarate = menuobj_list[menutypeevent.name];
+        subextrarate = menuobj_dict[menutypeevent.name];
       }
     });
   } else {
@@ -325,11 +333,19 @@ Pizza & Subs
     const span_toppingchoice = document.querySelector('#span_toppingchoice');
   }
 
+  if(menutype === "sub"){
+    ssubextrachoice = document.querySelector('#ssubextrachoice');
+    ssubextrachoice.options[0].innerText = "None";
+    ssubextrachoice.options[0].disabled = false;
+  }
+
   // onchange events
   topping_max_limit = 0;
   selected_toppings = null;
+  selected_extras = null;
   menutypeevents.forEach(menutypeevent => {
     menutypeevent.onchange = () => {
+      init_state = true;
       btn_disabled = true;
 
       if(menutypeevent.name === "toppingtype"){
@@ -360,6 +376,20 @@ Pizza & Subs
             selected_toppings.push(option.value);
           }
         });
+      } else if(menutypeevent.name === "subextrachoice"){
+        if(menutypeevent.options[0].selected){
+          menutypeevent.multiple = false;
+          menutypeevent.selectedIndex = 0;
+          selected_extras = null;
+        } else {
+          menutypeevent.multiple = true;
+          selected_extras = [];
+          menutypeevent.querySelectorAll('option').forEach(option => {
+            if(option.selected){
+              selected_extras.push(option.value);
+            }
+          });
+        }
       }
 
       if(selected_toppings){
@@ -410,17 +440,16 @@ Pizza & Subs
           });
         } else if(menutype === "sub"){
           menurate.forEach(event => {
-            console.log(event)
-            if(String(event.pk) === String(selected_events.subchoice) && String(event.fields.subsize) === String(selected_events.subsize)){
+            if(String(event.fields.subchoice) === String(selected_events.subchoice) && String(event.fields.subsize) === String(selected_events.subsize)){
               selected_price = event.fields.price;
               selected_pk = event.pk;
             }
           });
-          console.log(selected_events)
         }
 
 
         if(selected_price && selected_pk){
+          menutype_price.setAttribute('data-price', selected_price)
           menutype_price.innerHTML = "Price: $" + selected_price;
           btn_menutype.setAttribute('data-pk',selected_pk);
           btn_disabled = false;
@@ -436,6 +465,19 @@ Pizza & Subs
           } else {
             btn_disabled = false;
           }
+        } else if (selected_extras) {
+          btn_menutype.setAttribute('data-others',selected_extras);
+          extra_price = 0;
+          subextrarate.forEach(rate => {
+            selected_extras.forEach(extra =>{
+              if(rate.pk == extra){
+                extra_price += Number(rate.fields.price);
+              }
+            });
+          });
+          current_price = menutype_price.dataset.price;
+          menutype_price.innerHTML = "Price: $" + String(Number(current_price) + extra_price);
+
         } else {
           btn_menutype.setAttribute('data-others',"");
           if(topping_max_limit > 0){
@@ -454,13 +496,19 @@ Pizza & Subs
   });
 
   // quantity input
-  menutype_quantity.onkeyup = () => {
+  menutype_quantity.oninput = () => {
     if(menutype_quantity.value == ""){
       btn_menutype.disabled = true;
+      menutype_price.innerHTML = "";
     } else {
-      btn_menutype.disabled = false;
+      if(init_state){
+        btn_menutype.disabled = false;
+      } else {
+        btn_menutype.disabled = true;
+      }
+      current_price = menutype_price.dataset.price
+      menutype_price.innerHTML = "Price: $" + (current_price * menutype_quantity.value);
     }
-    console.log(menutype_quantity.value)
     btn_menutype.setAttribute('data-quantity', menutype_quantity.value)
   }
 
