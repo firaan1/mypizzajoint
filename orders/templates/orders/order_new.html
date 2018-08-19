@@ -99,10 +99,10 @@ Pizza & Subs
   const csrftoken = getCookie('csrftoken')
 
   // handlebars templates
-  select_template = Handlebars.compile(document.querySelector('#select_template').innerHTML);
-  span_template = Handlebars.compile(document.querySelector('#span_template').innerHTML);
-  input_template = Handlebars.compile(document.querySelector('#input_template').innerHTML);
-  addbtn_template = Handlebars.compile(document.querySelector('#addbtn_template').innerHTML);
+  const select_template = Handlebars.compile(document.querySelector('#select_template').innerHTML);
+  const span_template = Handlebars.compile(document.querySelector('#span_template').innerHTML);
+  const input_template = Handlebars.compile(document.querySelector('#input_template').innerHTML);
+  const addbtn_template = Handlebars.compile(document.querySelector('#addbtn_template').innerHTML);
 
 
   // delete previous orders
@@ -125,7 +125,234 @@ Pizza & Subs
     };
     });
 
-    ////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////
+    // pizza section
+    const dpizza = document.querySelector('#dpizza');
+    // pizzarate
+    pizzarate = {{pizzarate|safe}}
+    // pizzatype
+    const pizzatype = {{pizzatype|safe}}
+    var varlist = {}
+    pizzatype.forEach(p => {
+      varlist[p.pk] = p['fields']['pizzatype'];
+    });
+    dpizza.innerHTML += select_template({"menutype" : "pizza", "vartype" : "pizzatype", "varlist" : varlist});
+
+    // pizzasize
+    const pizzasize = {{pizzasize|safe}}
+    var varlist = {}
+    pizzasize.forEach(p => {
+      varlist[p.pk] = p['fields']['size'];
+    });
+    dpizza.innerHTML += select_template({"menutype" : "pizza", "vartype" : "pizzasize", "varlist" : varlist});
+
+    // toppingtype
+    const toppingtype = {{toppingtype|safe}}
+    var varlist = {}
+    toppingtype.forEach(p => {
+      varlist[p.pk] = p['fields']['toppingtype'];
+    });
+    dpizza.innerHTML += select_template({"menutype" : "pizza", "vartype" : "toppingtype", "varlist" : varlist});
+
+    // toppingchoice
+    const toppingchoice = {{toppingchoice|safe}}
+    var varlist = {}
+    toppingchoice.forEach(p => {
+      varlist[p.pk] = p['fields']['toppingchoice'];
+    });
+    dpizza.innerHTML += select_template({"menutype" : "pizza", "vartype" : "toppingchoice", "varlist" : varlist});
+
+    // toppingchoice span
+    dpizza.innerHTML += span_template({"vartype" : "toppingchoice"});
+
+    // quantity input
+    dpizza.innerHTML += input_template({"menutype" : "pizza"});
+
+    // price span
+    dpizza.innerHTML += span_template({"vartype" : "pizza"});
+
+    // add to cart button
+    dpizza.innerHTML += addbtn_template({"menutype" : "pizza"})
+
+
+    const toppingtype_dict = {
+      "Cheese" : 0, "1 topping" : 1, "2 toppings" : 2, "3 toppings" : 3, "Special" : 5}
+    const stoppingtype = document.querySelector('#stoppingtype');
+    const stoppingchoice = document.querySelector('#stoppingchoice');
+
+    dtoppingchoice.style.display = "none";
+
+    // onchange events
+    btn_pizza = document.querySelector('#btn_pizza');
+    btn_pizza.disabled = true;
+    const pizzaevents = document.querySelectorAll('.select_order[data-menutype=pizza]')
+    eventlist = []
+    pizzaevents.forEach(pizzaevent => {
+      if(pizzaevent.name != "toppingchoice"){
+        eventlist.push(pizzaevent);
+      }
+    })
+
+    const span_toppingchoice = document.querySelector('#span_toppingchoice');
+    const pizza_price = document.querySelector('#span_pizza');
+    const pizza_quantity = document.querySelector('#q_pizza');
+
+    topping_max_limit = 0;
+    selected_toppings = null;
+    pizzaevents.forEach(pizzaevent => {
+      pizzaevent.onchange = () => {
+        btn_disabled = true;
+
+        if(pizzaevent.name === "toppingtype"){
+          selected_toppings = null;
+          span_toppingchoice.innerHTML = "";
+          dtoppingchoice.style.display = "block";
+          topping_max_limit = toppingtype_dict[stoppingtype.options[stoppingtype.selectedIndex].getAttribute('name')]
+          if(topping_max_limit != 0){
+            btn_disabled = true;
+            dtoppingchoice.style.display = "block";
+            span_toppingchoice.innerHTML = "Pleae select " + topping_max_limit + " topping(s)";
+            if(topping_max_limit === 1){
+              stoppingchoice.multiple = false;
+            } else {
+              stoppingchoice.multiple = true;
+            }
+          } else {
+            btn_disabled = false;
+            dtoppingchoice.style.display = "none";
+            span_toppingchoice.innerHTML = "";
+          }
+          stoppingchoice.selectedIndex = 0;
+        } else if(pizzaevent.name === "toppingchoice"){
+          span_toppingchoice.innerHTML = "";
+          selected_toppings = [];
+          pizzaevent.querySelectorAll('option').forEach(option => {
+            if(option.selected){
+              selected_toppings.push(option.value);
+            }
+          });
+        }
+
+        if(selected_toppings){
+          if(selected_toppings.length < topping_max_limit){
+            span_toppingchoice.innerHTML = "Pleae select " + topping_max_limit + " topping(s)";
+            btn_disabled = true;
+          } else if(selected_toppings.length === topping_max_limit){
+            span_toppingchoice.innerHTML = "";
+            btn_disabled = false;
+          } else {
+            span_toppingchoice.innerHTML = "Topping choices restricted to " + topping_max_limit + " item(s)";
+            btn_disabled = true;
+          }
+        }
+
+        selected_events = {}
+        eventlist.forEach(event => {
+          if(event.value != ""){
+            selected_events[event.name] = event.value;
+          }
+        });
+
+        if(Object.keys(selected_events).length === eventlist.length){
+          selected_price = null;
+          selected_pk = null;
+          pizzarate.forEach(event => {
+            if(String(event.fields.pizzatype) === String(selected_events.pizzatype) && String(event.fields.pizzasize) === String(selected_events.pizzasize) && String(event.fields.toppingtype) === String(selected_events.toppingtype)){
+              selected_price = event.fields.price;
+              selected_pk = event.pk;
+            }
+          });
+          if(selected_price && selected_pk){
+            pizza_price.innerHTML = "Price: $" + selected_price;
+            btn_pizza.setAttribute('data-pk',selected_pk);
+          } else {
+            pizza_price.innerHTML = "Item not available"
+            btn_pizza.setAttribute('data-pk','');
+          }
+          if(selected_toppings){
+            btn_pizza.setAttribute('data-others',selected_toppings);
+          } else {
+            btn_pizza.setAttribute('data-others',"");
+          }
+          btn_pizza.setAttribute('data-quantity',pizza_quantity.value)
+          btn_pizza.disabled = btn_disabled;
+        } else {
+          pizza_price.innerHTML = "";
+          btn_pizza.setAttribute('data-quantity','')
+          btn_pizza.disabled = true;
+        }
+
+
+      }
+    });
+
+    // quantity input
+    pizza_quantity.onkeyup = () => {
+      if(pizza_quantity.value == ""){
+        btn_pizza.disabled = true;
+      } else {
+        btn_pizza.disabled = false;
+      }
+      console.log(pizza_quantity.value)
+      btn_pizza.setAttribute('data-quantity', pizza_quantity.value)
+    }
+
+    btn_pizza.onclick = () => {
+      add_cart(btn_pizza);
+    }
+    ////////////////////////////////////////////////////
+
+    // sub section
+    const dsub = document.querySelector('#dsub');
+    // subchoice
+    const subchoice = {{subchoice|safe}}
+    var varlist = {}
+    subchoice.forEach(p => {
+      varlist[p.pk] = p.fields.subchoice;
+    });
+    dsub.innerHTML += select_template({"menutype" : "sub", "vartype" : "subchoice", "varlist" : varlist});
+
+    // subsize
+    const subsize = {{subsize|safe}}
+    var varlist = {}
+    subsize.forEach(p => {
+      varlist[p.pk] = p.fields.size;
+    });
+    dsub.innerHTML += select_template({"menutype" : "sub", "vartype" : "subsize", "varlist" : varlist});
+
+    // subextra
+    const subextra = {{subextra|safe}}
+    var varlist = {}
+    subextra.forEach(p => {
+      varlist[p.pk] = p.fields.subextra;
+    });
+    dsub.innerHTML += select_template({"menutype" : "sub", "vartype" : "subextra", "varlist" : varlist});
+
+    // quantity input
+    dsub.innerHTML += input_template({"menutype" : "sub"});
+
+    // price span
+    dsub.innerHTML += span_template({"vartype" : "sub"});
+
+    // add to cart button
+    dsub.innerHTML += addbtn_template({"menutype" : "sub"})
+
+    // initial select choice
+    const ssubextra = document.querySelector('#ssubextra');
+    ssubextra.multiple = true;
+    const btn_sub = document.querySelector('#btn_sub');
+    btn_sub.disabled = true;
+    const subevents = document.querySelectorAll('.select_order[data-menutype=sub]');
+    eventlist = subevents;
+
+    const sub_price = document.querySelector('#span_sub');
+    const sub_quantity = document.querySelector('#q_sub');
+
+
+
+    // onchange events
+
 
     ////////////////////////////////////////////
     // menu anchors
@@ -133,44 +360,6 @@ Pizza & Subs
       const anchor_div = document.querySelector('#d' + anchor.id);
       anchor_div.style.display = "none";
       anchor.onclick = () => {
-
-        menutype = anchor.id;
-
-        if(anchor.id === "pizza"){
-          menurate = {{pizzarate|safe}}
-          menuobj_dict = {
-            "pizzatype" : {{pizzatype|safe}},
-            "pizzasize" : {{pizzasize|safe}},
-            "toppingtype" : {{toppingtype|safe}},
-            "toppingchoice" : {{toppingchoice|safe}}
-          }
-        } else if(anchor.id === "pasta"){
-          menurate = {{pastarate|safe}}
-          menuobj_dict = {
-            "pastachoice" : {{pastarate|safe}}
-          }
-        } else if(anchor.id === "salad"){
-          menurate = {{saladrate|safe}}
-          menuobj_dict = {
-            "saladchoice" : {{saladrate|safe}}
-          }
-        } else if(anchor.id === "dinnerplatter"){
-          menurate = {{dinnerplatterrate|safe}}
-          menuobj_dict = {
-            "dinnerplatterchoice" : {{dinnerplatterchoice|safe}},
-            "dinnerplattersize" : {{dinnerplattersize|safe}}
-          }
-        } else if(anchor.id === "sub"){
-          menurate = {{subrate|safe}}
-          menuobj_dict = {
-            "subchoice" : {{subchoice|safe}},
-            "subsize" : {{subsize|safe}},
-            "subextrachoice" : {{subextrachoice|safe}}
-          }
-        }
-
-        // create elements
-        create_menu_functions(menutype, menurate, menuobj_dict);
 
         // reset options
         document.querySelectorAll('.select_order[data-menutype=' + anchor.id + ']').forEach(event => {
@@ -248,15 +437,14 @@ Pizza & Subs
   // function menu
   function create_menu_functions(menutype, menurate, menuobj_dict){
 
-// parse
-  // menutype = pizza
-  // menurate = pizzarate
-  // menuobj_dict = {"pizzatype" : pizzatype, "pizzasize" : pizzasize, "toppingtype" : toppingtype, "toppingchoice" : toppingchoice }
+// outside
+  menutype = pizza
+  menurate = pizzarate
+  menuobj_dict = {"pizzatype" : pizzatype, "pizzasize" : pizzasize, "toppingtype" : toppingtype, "toppingchoice" : toppingchoice }
 //
 
   // menutype section
   const dmenutype = document.querySelector('#d' + menutype);
-  dmenutype.innerHTML = "";
   // menurate
   // menucategories
   menuobj_list = Object.keys(menuobj_dict);
@@ -301,13 +489,6 @@ Pizza & Subs
         eventlist.push(menutypeevent);
       }
     });
-  } else if(menutype === "sub"){
-    eventlist = []
-    menutypeevents.forEach(menutypeevent => {
-      if(menutypeevent.name != "subextra"){
-        eventlist.push(menutypeevent);
-      }
-    });
   } else {
     eventlist = menutypeevents;
   }
@@ -320,7 +501,7 @@ Pizza & Subs
     const dtoppingchoice = document.querySelector('#dtoppingchoice');
     dtoppingchoice.style.display = "none";
     const stoppinghoice = document.querySelector('#stoppingchoice');
-    toppingtype_dict = {
+    const toppingtype_dict = {
       "Cheese" : 0, "1 topping" : 1, "2 toppings" : 2, "3 toppings" : 3, "Special" : 5}
     const span_toppingchoice = document.querySelector('#span_toppingchoice');
   }
@@ -394,53 +575,19 @@ Pizza & Subs
               selected_pk = event.pk;
             }
           });
-        } else if(menutype === "pasta" || menutype === "salad"){
-          menurate.forEach(event => {
-            if(String(event.pk) === String(selected_events[menutype + "choice"])) {
-              selected_price = event.fields.price;
-              selected_pk = event.pk;
-            }
-          });
-        } else if(menutype === "dinnerplatter"){
-          menurate.forEach(event => {
-            if(String(event.fields.dinnerplatterchoice) === String(selected_events.dinnerplatterchoice) && String(event.fields.dinnerplattersize) === String(selected_events.dinnerplattersize)){
-              selected_price = event.fields.price;
-              selected_pk = event.pk;
-            }
-          });
-        } else if(menutype === "sub"){
-          menurate.forEach(event => {
-            console.log(event)
-            if(String(event.pk) === String(selected_events.subchoice) && String(event.fields.subsize) === String(selected_events.subsize)){
-              selected_price = event.fields.price;
-              selected_pk = event.pk;
-            }
-          });
-          console.log(selected_events)
         }
-
 
         if(selected_price && selected_pk){
           menutype_price.innerHTML = "Price: $" + selected_price;
           btn_menutype.setAttribute('data-pk',selected_pk);
-          btn_disabled = false;
         } else {
           menutype_price.innerHTML = "Item not available"
           btn_menutype.setAttribute('data-pk','');
-          btn_disabled = true;
         }
         if(selected_toppings){
           btn_menutype.setAttribute('data-others',selected_toppings);
-          if(selected_toppings.length != topping_max_limit){
-            btn_disabled = true;
-          } else {
-            btn_disabled = false;
-          }
         } else {
           btn_menutype.setAttribute('data-others',"");
-          if(topping_max_limit > 0){
-            btn_disabled = true;
-          }
         }
         btn_menutype.setAttribute('data-quantity',menutype_quantity.value)
         btn_menutype.disabled = btn_disabled;

@@ -22,11 +22,20 @@ class ToppingChoice(models.Model):
     def __str__(self):
         return f"{self.toppingchoice}"
 
-class SubExtra(models.Model):
-    subextra = models.CharField(max_length = 64)
-    price = models.DecimalField(max_digits = 6, decimal_places = 2)
+class SubChoice(models.Model):
+    subchoice = models.CharField(max_length = 64)
     def __str__(self):
-        return f"Extra {self.subextra} cost ${self.price}"
+        return f"{self.subchoice}"
+
+# class SubExtraChoice(models.Model):
+#     subextrachoice = models.CharField(max_length = 64)
+#     def __str__(self):
+#         return f"{self.subextrachoice}"
+
+class DinnerPlatterChoice(models.Model):
+    dinnerplatterchoice = models.CharField(max_length = 64)
+    def __str__(self):
+        return f"{self.dinnerplatterchoice}"
 
 class PizzaRate(models.Model):
     pizzatype = models.ForeignKey(PizzaType, on_delete = models.CASCADE, related_name = "pizza_type")
@@ -39,13 +48,21 @@ class PizzaRate(models.Model):
         return f"{self.pizzasize} sized {self.pizzatype} pizza with {self.toppingtype} cost ${self.price}"
 
 class SubRate(models.Model):
-    subchoice = models.CharField(max_length = 64)
+    subchoice = models.ForeignKey(SubChoice, on_delete = models.CASCADE, related_name = "sub_choice")
     subsize = models.ForeignKey(Size, on_delete = models.CASCADE, related_name = "sub_size", blank = True, null = True)
     price = models.DecimalField(max_digits = 6, decimal_places = 2)
     class Meta:
         unique_together = ["subchoice", "subsize"]
     def __str__(self):
         return f"{self.subchoice} subs ({self.subsize} sized) cost ${self.price}"
+
+class SubExtraRate(models.Model):
+    subextrachoice = models.CharField(max_length = 64)
+    price = models.DecimalField(max_digits = 6, decimal_places = 2)
+    class Meta:
+        unique_together = ["subextrachoice"]
+    def __str__(self):
+        return f"{self.subextrachoice} subextras cost ${self.price}"
 
 class PastaRate(models.Model):
     pastachoice = models.CharField(max_length = 64)
@@ -60,7 +77,7 @@ class SaladRate(models.Model):
         return f"{self.saladchoice} pasta cost ${self.price}"
 
 class DinnerPlatterRate(models.Model):
-    dinnerplatterchoice = models.CharField(max_length = 64)
+    dinnerplatterchoice = models.ForeignKey(DinnerPlatterChoice, on_delete = models.CASCADE, related_name = "dinnerplatter_choice")
     dinnerplattersize = models.ForeignKey(Size, on_delete = models.CASCADE, related_name = "dinnerplatter_size")
     price = models.DecimalField(max_digits = 6, decimal_places = 2)
     def __str__(self):
@@ -78,7 +95,7 @@ class OrderSub(models.Model):
     user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "sub_user", null = True)
     menutype = models.CharField(max_length=25, default="sub", editable="False")
     subchoice = models.ForeignKey(SubRate, on_delete = models.SET_NULL, related_name = "sub_choice", null = True)
-    subextra = models.ManyToManyField(SubExtra, related_name = "sub_extra")
+    subextrachoice = models.ManyToManyField(SubExtraRate, related_name = "subextra_choice")
     def __str__(self):
         return f"{self.user} : {self.subchoice} with {self.subextra}"
 

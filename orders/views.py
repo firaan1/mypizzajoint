@@ -69,11 +69,25 @@ def order(request):
     last_orders = user_cost(request)
     context = {
     "last_orders" : last_orders,
+
     "pizzatype" : serialize("json",PizzaRate.pizzatype.get_queryset()),
     "pizzasize" : serialize("json",PizzaRate.pizzasize.get_queryset()),
     "toppingtype" : serialize("json",PizzaRate.toppingtype.get_queryset()),
     "toppingchoice" : serialize("json",ToppingChoice.objects.all()),
-    "pizzarate" : serialize("json",PizzaRate.objects.all())
+    "pizzarate" : serialize("json",PizzaRate.objects.all()),
+
+    "subchoice" : serialize("json", SubRate.subchoice.get_queryset()),
+    "subsize" : serialize("json", SubRate.subsize.get_queryset()),
+    "subextrachoice" : serialize("json", SubExtraRate.objects.all()),
+    "subrate" : serialize("json", SubRate.objects.all()),
+
+    "pastarate" : serialize("json", PastaRate.objects.all()),
+
+    "saladrate" : serialize("json", SaladRate.objects.all()),
+
+    "dinnerplatterrate" : serialize("json", DinnerPlatterRate.objects.all()),
+    "dinnerplattersize" : serialize("json", DinnerPlatterRate.dinnerplattersize.get_queryset()),
+    "dinnerplatterchoice" : serialize("json", DinnerPlatterRate.dinnerplatterchoice.get_queryset())
     }
     return render(request, "orders/order.html", context)
 
