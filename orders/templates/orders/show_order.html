@@ -1,0 +1,47 @@
+{% extends "orders/layout.html" %}
+
+{% block title %}
+Pizza & Subs
+{% endblock %}
+
+{% block body %}
+<div class="container">
+  <h1>Order Confirmation</h1>
+  <div id="placedorders">
+    <ul>
+      {% for order in last_orders.order_list %}
+      <li data-menutype="{{order.menutype}}" data-pk="{{order.pk}}" data-todo="delete">
+        {% if order.menutype == "pizza" %}
+          {{order.pizzachoice}}
+          <ul>
+              {% for toppingchoice in order.toppingchoice.all %}
+                <li>{{toppingchoice}}</li>
+              {% empty %}
+              {% endfor %}
+          </ul>
+        {% elif order.menutype == "sub" %}
+          {{order.subchoice}}
+          <ul>
+            {% for s in order.subextrachoice.all %}
+              <li>{{s}}</li>
+            {% endfor %}
+          </ul>
+        {% elif order.menutype == "pasta" %}
+          {{order.pastachoice}}
+        {% elif order.menutype == "salad" %}
+          {{order.saladchoice}}
+        {% elif order.menutype == "dinnerplatter" %}
+          {{order.dinnerplatterchoice}}
+        {% endif %}
+      </li>
+        {% empty %}
+        <li>No previous orders in cart</li>
+      {% endfor %}
+    </ul>
+  </div>
+  <h2>Total cost: ${{last_orders.total_cost}}</h2>
+  <a href="{% url 'show_order' %}">Make Payment</button>
+</div>
+
+
+{% endblock %}

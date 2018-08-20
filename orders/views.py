@@ -80,6 +80,14 @@ def index(request):
     # return HttpResponse("Project 3: TODO")
     return render(request, "orders/index.html", context)
 
+def show_order(request):
+    last_orders = user_cost(request)
+    context = {
+    "last_orders" : last_orders
+    }
+    return render(request, "orders/show_order.html", context)
+
+
 @login_required(login_url='/login')
 def order(request):
     last_orders = user_cost(request)

@@ -123,3 +123,23 @@ class OrderDinnerPlatter(models.Model):
     dinnerplatterchoice = models.ForeignKey(DinnerPlatterRate, on_delete = models.SET_NULL, related_name = "dinnerplatter_choice", null = True)
     def __str__(self):
         return f"{self.user} : {self.dinnerplatterchoice}"
+
+class PlacedOrder(models.Model):
+    user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "placedorder_user", null = True)
+    orderpizza = models.ForeignKey(OrderPizza, on_delete = models.SET_NULL, related_name = "order_pizza", null = True)
+    ordersub = models.ForeignKey(OrderSub, on_delete = models.SET_NULL, related_name = "order_sub", null = True)
+    orderpasta = models.ForeignKey(OrderPasta, on_delete = models.SET_NULL, related_name = "order_pasta", null = True)
+    ordersalad = models.ForeignKey(OrderSalad, on_delete = models.SET_NULL, related_name = "order_salad", null = True)
+    orderdinnerplatter = models.ForeignKey(OrderDinnerPlatter, on_delete = models.SET_NULL, related_name = "order_dinnerplatter", null = True)
+    completed = models.BooleanField(default = False)
+
+    def clean(self):
+        if not (self.orderpizza or self.ordersub or self.orderpasta or self.ordersalad or self.orderdinnerplatter):
+            raise ValidationError("You must specify atleast one order")
+
+    def __str__(self):
+        count = 0
+        for i in self.orderpizza, self.ordersub, self.orderpasta, self.ordersalad, self.orderdinnerplatter:
+            if i:
+                count += 1
+        return f"user {self.user} ordered in f{i} categories"
