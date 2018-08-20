@@ -40,8 +40,26 @@ Pizza & Subs
     </ul>
   </div>
   <h2>Total cost: ${{last_orders.total_cost}}</h2>
-  <a href="{% url 'show_order' %}">Make Payment</button>
+  <!-- <a href="{% url 'show_order' %}">Make Payment</button> -->
 </div>
+
+<form action="{% url 'make_payment' %}" method="POST">
+  {% csrf_token %}
+  <input name="amount" value="{% widthratio last_orders.total_cost 1 100 %}" type="hidden">
+  <script id="payment"
+    src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+    data-key="pk_test_vM1JtHcRqfBiUB04mbPkFcJe"
+    data-amount="{% widthratio last_orders.total_cost 1 100 %}"
+    data-name="Stripe.com"
+    data-email="{{user_email}}"
+    data-description="Example charge"
+    data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+    data-locale="auto"
+    data-allow-remember-me="false"
+    data-zip-code="false">
+  </script>
+</form>
+
 
 
 {% endblock %}

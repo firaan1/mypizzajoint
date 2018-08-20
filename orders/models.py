@@ -126,11 +126,11 @@ class OrderDinnerPlatter(models.Model):
 
 class PlacedOrder(models.Model):
     user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "placedorder_user", null = True)
-    orderpizza = models.ForeignKey(OrderPizza, on_delete = models.SET_NULL, related_name = "order_pizza", null = True)
-    ordersub = models.ForeignKey(OrderSub, on_delete = models.SET_NULL, related_name = "order_sub", null = True)
-    orderpasta = models.ForeignKey(OrderPasta, on_delete = models.SET_NULL, related_name = "order_pasta", null = True)
-    ordersalad = models.ForeignKey(OrderSalad, on_delete = models.SET_NULL, related_name = "order_salad", null = True)
-    orderdinnerplatter = models.ForeignKey(OrderDinnerPlatter, on_delete = models.SET_NULL, related_name = "order_dinnerplatter", null = True)
+    orderpizza = models.ManyToManyField(OrderPizza, related_name = "order_pizza")
+    ordersub =  models.ManyToManyField(OrderSub, related_name = "order_sub")
+    orderpasta = models.ManyToManyField(OrderPasta, related_name = "order_pasta")
+    ordersalad =  models.ManyToManyField(OrderSalad, related_name = "order_salad")
+    orderdinnerplatter =  models.ManyToManyField(OrderDinnerPlatter, related_name = "order_dinnerplatter")
     completed = models.BooleanField(default = False)
 
     def clean(self):

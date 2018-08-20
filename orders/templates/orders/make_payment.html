@@ -1,0 +1,21 @@
+{% extends "orders/layout.html" %}
+
+{% block title %}
+Pizza & Subs
+{% endblock %}
+
+{% block body %}
+{{status}} "_"
+
+{{test}}
+
+{{token}}
+
+<hr>
+
+{% for paid_order in paid_orders %}
+{{ paid_order }}
+{% empty %}
+No previous orders
+{% endfor %}
+{% endblock %}

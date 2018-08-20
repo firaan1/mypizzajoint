@@ -41,7 +41,9 @@ Pizza & Subs
       {% endfor %}
     </ul>
   </div>
-  <a href="{% url 'show_order' %}">Place Order</button>
+  {% if last_orders.order_list %}
+    <a href="{% url 'show_order' %}">Place Order</button>
+  {% endif %}
 </div>
 
 <div class="container">

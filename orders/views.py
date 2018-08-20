@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.core.serializers import serialize
 import json
+import stripe
 
 from .models import *
 
@@ -38,6 +39,27 @@ def user_cost(object):
         total_cost += order.dinnerplatterchoice.price
         order_list.append(order)
     return dict(order_list = order_list, total_cost = total_cost)
+
+def add_paid_orders(object):
+    placed_order = PlacedOrder(user = object.user)
+    placed_order.save()
+    pizzas = [s for s in OrderPizza.objects.filter(user = object.user)]
+    subs = [s for s in OrderSub.objects.filter(user = object.user)]
+    pastas = [s for s in OrderPasta.objects.filter(user = object.user)]
+    salads = [s for s in OrderSalad.objects.filter(user = object.user)]
+    dinnerplatters = [s for s in OrderDinnerPlatter.objects.filter(user = object.user)]
+    try:
+        placed_order.orderpizza.set(pizzas)
+        placed_order.ordersub.set(subs)
+        placed_order.orderpasta.set(pastas)
+        placed_order.ordersalad.set(salads)
+        placed_order.orderdinnerplatter.set(dinnerplatters)
+        placed_order.save()
+        return "done"
+    except Exception as e:
+        return e
+    # for order in pizzas + subs + pastas + salads + dinnerplatters:
+    #     order.delete()
 
 menu_dict = {"pizza" : OrderPizza, "sub" : OrderSub, "pasta" : OrderPasta, "salad" : OrderSalad, "dinnerplatter" : OrderDinnerPlatter, "pizzarate" : PizzaRate, "subrate" : SubRate, "pastarate" : PastaRate, "saladrate" : SaladRate, "dinnerplatterrate" : DinnerPlatterRate}
 
@@ -80,13 +102,36 @@ def index(request):
     # return HttpResponse("Project 3: TODO")
     return render(request, "orders/index.html", context)
 
+@login_required(login_url='/login')
 def show_order(request):
     last_orders = user_cost(request)
     context = {
-    "last_orders" : last_orders
+    "last_orders" : last_orders,
+    "user_email" : request.user.email
     }
     return render(request, "orders/show_order.html", context)
 
+@login_required(login_url='/login')
+def make_payment(request):
+    status = None
+    test = "none"
+    if request.method == "POST":
+        stripe.api_key = "sk_test_tSFhKEyCfNka1V4A71VZWbWc"
+        token = request.POST['stripeToken']
+        amount = request.POST['amount']
+        try:
+            charge = stripe.Charge.create( amount=int(amount), currency='usd', description='charge', source=token)
+            status = "success"
+            test = add_paid_orders(request);
+        except Exception as e:
+            status = str(e)
+    paid_orders = PlacedOrder.objects.filter(user = request.user)
+    context = {
+    "paid_orders" : paid_orders,
+    "status" : status,
+    "test" : test
+    }
+    return render(request, "orders/make_payment.html", context)
 
 @login_required(login_url='/login')
 def order(request):
