@@ -39,11 +39,11 @@ Pizza & Subs
       {% endfor %}
     </ul>
   </div>
-  <h2>Total cost: ${{last_orders.total_cost}}</h2>
-  <!-- <a href="{% url 'show_order' %}">Make Payment</button> -->
+
+  <h2 class="makepayment">Total cost: ${{last_orders.total_cost}}</h2>
 </div>
 
-<form action="{% url 'make_payment' %}" method="POST">
+<form action="{% url 'make_payment' %}" method="POST" class="makepayment">
   {% csrf_token %}
   <input name="amount" value="{% widthratio last_orders.total_cost 1 100 %}" type="hidden">
   <script id="payment"
@@ -60,6 +60,18 @@ Pizza & Subs
   </script>
 </form>
 
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.makepayment').forEach(event => {
+        if(Number({{last_orders.total_cost}}) > 0){
+          event.style.display = "block";
+        } else {
+          event.style.display = "none";
+        }
+    }
+    );
+  });
+</script>
 
 
 {% endblock %}

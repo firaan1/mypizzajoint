@@ -6,6 +6,102 @@ Pizza & Subs
 
 {% block body %}
 
+<div class="container" id="menupizza">
+  {% for ptype in pizzatype %}
+    {{ptype.pk}}
+  {% endfor %}
+
+
+
+  {% for ptype in pizzatype %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>Topping Type</th>
+          {% for psize in pizzasize %}
+            <th>{{psize}}</th>
+          {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+      {% for ttype in toppingtype %}
+        <tr>
+          <td>{{ttype}}</td>
+            {% for psize in pizzasize %}
+
+              {% for price in pizzarate %}
+                {% if ptype == price.pizzatype and ttype == price.toppingtype and psize == price.pizzasize %}
+                  <td>{{price.price}}</td>
+                {% endif %}
+              {% endfor %}
+
+            {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+    </table>
+
+  {% endfor %}
+
+</div>
+
+<div class="container" id="menusub">
+  <table>
+    <thead>
+      <tr>
+        <th>Subs Choice</th>
+        {% for ssize in subsize %}
+          <th>{{ssize}}</th>
+        {% endfor %}
+      </tr>
+  </thead>
+  <tbody>
+    {% for schoice in subchoice %}
+    <tr>
+      <td>{{schoice}}</td>
+      {% for ssize in subsize %}
+        {% for price in subrate %}
+          {% if schoice == price.subchoice and ssize == price.subsize %}
+            <td>{{price.price}}</td>
+            {% endif %}
+          {% endfor %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<div class="container" id="menupasta">
+  <table>
+    <thead>
+      <tr>
+        <th>Pasta Choice</th>
+        {% for ssize in subsize %}
+          <th>{{ssize}}</th>
+        {% endfor %}
+      </tr>
+  </thead>
+  <tbody>
+    {% for schoice in subchoice %}
+    <tr>
+      <td>{{schoice}}</td>
+      {% for ssize in subsize %}
+        {% for price in subrate %}
+          {% if schoice == price.subchoice and ssize == price.subsize %}
+            <td>{{price.price}}</td>
+            {% endif %}
+          {% endfor %}
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+
+
 <div class="container">
   <div class="menupizza">
     <ul>

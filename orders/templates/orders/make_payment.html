@@ -14,7 +14,25 @@ Pizza & Subs
 <hr>
 
 {% for paid_order in paid_orders %}
-{{ paid_order }}
+  <h4>{{paid_order.datetime}}</h4>
+  <ul>
+    {% for pizza in paid_order.orderpizza.all %}
+      <li>{{pizza.pizzachoice}}</li>
+    {% endfor %}
+    {% for sub in paid_order.ordersub.all %}
+      <li>{{sub.subchoice}}</li>
+    {% endfor %}
+    {% for pasta in paid_order.orderpasta.all %}
+      <li>{{pasta.pastachoice}}</li>
+    {% endfor %}
+    {% for salad in paid_order.ordersalad.all %}
+      <li>{{salad.saladchoice}}</li>
+    {% endfor %}
+    {% for dinnerplatter in paid_order.orderdinnerplatter.all %}
+      <li>{{dinnerplatter.dinnerplatterchoice}}</li>
+    {% endfor %}
+  </ul>
+  ${{ paid_order.totalprice }}
 {% empty %}
 No previous orders
 {% endfor %}

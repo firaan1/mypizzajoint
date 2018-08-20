@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.serializers import serialize
 import json
 import stripe
+import datetime
 
 from .models import *
 
@@ -20,34 +21,35 @@ def user_cost(object):
     total_cost = 0
     order_list = []
     user_id = object.user.id
-    for order in OrderPizza.objects.filter(user_id = user_id):
+    for order in OrderPizza.objects.filter(user_id = user_id, paid = False):
         total_cost += order.pizzachoice.price
         order_list.append(order)
-    for order in OrderSub.objects.filter(user_id = user_id):
+    for order in OrderSub.objects.filter(user_id = user_id, paid = False):
         total_cost += order.subchoice.price
         for o in order.subextrachoice.all():
             total_cost += o.price
         order_list.append(order)
         # total_cost += order.subextra.price
-    for order in OrderPasta.objects.filter(user_id = user_id):
+    for order in OrderPasta.objects.filter(user_id = user_id, paid = False):
         total_cost += order.pastachoice.price
         order_list.append(order)
-    for order in OrderSalad.objects.filter(user_id = user_id):
+    for order in OrderSalad.objects.filter(user_id = user_id, paid = False):
         total_cost += order.saladchoice.price
         order_list.append(order)
-    for order in OrderDinnerPlatter.objects.filter(user_id = user_id):
+    for order in OrderDinnerPlatter.objects.filter(user_id = user_id, paid = False):
         total_cost += order.dinnerplatterchoice.price
         order_list.append(order)
     return dict(order_list = order_list, total_cost = total_cost)
 
 def add_paid_orders(object):
+    last_orders = user_cost(object)
     placed_order = PlacedOrder(user = object.user)
     placed_order.save()
-    pizzas = [s for s in OrderPizza.objects.filter(user = object.user)]
-    subs = [s for s in OrderSub.objects.filter(user = object.user)]
-    pastas = [s for s in OrderPasta.objects.filter(user = object.user)]
-    salads = [s for s in OrderSalad.objects.filter(user = object.user)]
-    dinnerplatters = [s for s in OrderDinnerPlatter.objects.filter(user = object.user)]
+    pizzas = [s for s in OrderPizza.objects.filter(user = object.user, paid = False)]
+    subs = [s for s in OrderSub.objects.filter(user = object.user, paid = False)]
+    pastas = [s for s in OrderPasta.objects.filter(user = object.user, paid = False)]
+    salads = [s for s in OrderSalad.objects.filter(user = object.user, paid = False)]
+    dinnerplatters = [s for s in OrderDinnerPlatter.objects.filter(user = object.user, paid = False)]
     try:
         placed_order.orderpizza.set(pizzas)
         placed_order.ordersub.set(subs)
@@ -55,11 +57,16 @@ def add_paid_orders(object):
         placed_order.ordersalad.set(salads)
         placed_order.orderdinnerplatter.set(dinnerplatters)
         placed_order.save()
+        for order in pizzas + subs + pastas + salads + dinnerplatters:
+            order.paid = True
+            order.save()
+        placed_order.totalprice = last_orders['total_cost']
+        placed_order.save()
+        placed_order.datetime = datetime.datetime.now()
+        placed_order.save()
         return "done"
     except Exception as e:
         return e
-    # for order in pizzas + subs + pastas + salads + dinnerplatters:
-    #     order.delete()
 
 menu_dict = {"pizza" : OrderPizza, "sub" : OrderSub, "pasta" : OrderPasta, "salad" : OrderSalad, "dinnerplatter" : OrderDinnerPlatter, "pizzarate" : PizzaRate, "subrate" : SubRate, "pastarate" : PastaRate, "saladrate" : SaladRate, "dinnerplatterrate" : DinnerPlatterRate}
 
@@ -97,7 +104,27 @@ def index(request):
     if not request.user.is_authenticated:
         return render(request, "orders/login.html", {"message" : None})
     context = {
-        "pizzas" : PizzaRate.objects.all()
+        "pizzas" : PizzaRate.objects.all(),
+
+
+            "pizzatype" : PizzaRate.pizzatype.get_queryset(),
+            "pizzasize" : PizzaRate.pizzasize.get_queryset(),
+            "toppingtype" : PizzaRate.toppingtype.get_queryset(),
+            "toppingchoice" : ToppingChoice.objects.all(),
+            "pizzarate" : PizzaRate.objects.all(),
+
+            "subchoice" :  SubRate.subchoice.get_queryset(),
+            "subsize" :  SubRate.subsize.get_queryset(),
+            "subextrachoice" :  SubExtraRate.objects.all(),
+            "subrate" :  SubRate.objects.all(),
+
+            "pastarate" :  PastaRate.objects.all(),
+
+            "saladrate" :  SaladRate.objects.all(),
+
+            "dinnerplatterrate" :  DinnerPlatterRate.objects.all(),
+            "dinnerplattersize" :  DinnerPlatterRate.dinnerplattersize.get_queryset(),
+            "dinnerplatterchoice" :  DinnerPlatterRate.dinnerplatterchoice.get_queryset()
     }
     # return HttpResponse("Project 3: TODO")
     return render(request, "orders/index.html", context)
