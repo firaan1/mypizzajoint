@@ -6,15 +6,10 @@ Pizza & Subs
 
 {% block body %}
 
-<div class="container" id="menupizza">
+<div class="container menulist" id="menupizza">
+  <h2 class="menutitle">Pizzas</h2>
   {% for ptype in pizzatype %}
-    {{ptype.pk}}
-  {% endfor %}
-
-
-
-  {% for ptype in pizzatype %}
-
+    <h4>{{ptype}}</h4>
     <table>
       <thead>
         <tr>
@@ -41,12 +36,11 @@ Pizza & Subs
       {% endfor %}
     </tbody>
     </table>
-
   {% endfor %}
-
 </div>
 
-<div class="container" id="menusub">
+<div class="container menulist" id="menusub">
+  <h2 class="menutitle">Subs</h2>
   <table>
     <thead>
       <tr>
@@ -73,23 +67,66 @@ Pizza & Subs
 </table>
 </div>
 
-<div class="container" id="menupasta">
+<div class="container menulist" id="menupasta">
+  <h2 class="menutitle">Pastas</h2>
   <table>
     <thead>
       <tr>
         <th>Pasta Choice</th>
-        {% for ssize in subsize %}
+          <th>Regular</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for pchoice in pastarate %}
+    <tr>
+      <td>{{pchoice.pastachoice}}</td>
+      <td>{{pchoice.price}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+
+<div class="container menulist" id="menusalad">
+  <h2 class="menutitle">Salads</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Salad Choice</th>
+          <th>Regular</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for schoice in saladrate %}
+    <tr>
+      <td>{{schoice.saladchoice}}</td>
+      <td>{{schoice.price}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+
+<div class="container menulist" id="menudinnerplatter">
+  <h2 class="menutitle">Dinner Platters</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Dinner Platters Choice</th>
+        {% for ssize in dinnerplattersize %}
           <th>{{ssize}}</th>
         {% endfor %}
       </tr>
   </thead>
   <tbody>
-    {% for schoice in subchoice %}
+    {% for schoice in dinnerplatterchoice %}
     <tr>
       <td>{{schoice}}</td>
-      {% for ssize in subsize %}
-        {% for price in subrate %}
-          {% if schoice == price.subchoice and ssize == price.subsize %}
+      {% for ssize in dinnerplattersize %}
+        {% for price in dinnerplatterrate %}
+          {% if schoice == price.dinnerplatterchoice and ssize == price.dinnerplattersize %}
             <td>{{price.price}}</td>
             {% endif %}
           {% endfor %}
@@ -101,18 +138,6 @@ Pizza & Subs
 </div>
 
 
-
-<div class="container">
-  <div class="menupizza">
-    <ul>
-    {% for pizza in pizzas %}
-    <li>{{pizza.pizzatype}} {{pizza.pizzasize}} {{pizza.toppingtype}} {{pizza.price}}</li>
-    {% empty %}
-      <li>No pizzas</li>
-    {% endfor %}
-    <ul>
-  </div>
-</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {

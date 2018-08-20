@@ -5,7 +5,6 @@ Pizza & Subs
 {% endblock %}
 
 {% block body %}
-<h3>{{last_orders.total_cost}}</h3>
 
 <div class="container">
   <div id="placedorders">
@@ -42,9 +41,12 @@ Pizza & Subs
     </ul>
   </div>
   {% if last_orders.order_list %}
+    <h3>Total: ${{last_orders.total_cost}}</h3>
     <a href="{% url 'show_order' %}">Place Order</button>
   {% endif %}
 </div>
+
+
 
 <div class="container">
   <div>
@@ -67,6 +69,7 @@ Pizza & Subs
 <div class="container" id="ddinnerplatter">
 </div>
 
+<div id="menulist"></div>
 
 
 
@@ -144,6 +147,9 @@ Pizza & Subs
 
         menutype = anchor.id;
 
+        // adding enulist
+        show_menu(menutype);
+
         if(anchor.id === "pizza"){
           menurate = {{pizzarate|safe}}
           menuobj_dict = {
@@ -208,6 +214,22 @@ Pizza & Subs
 
 
   });
+
+  function show_menu(menutype){
+    const request = new XMLHttpRequest();
+    const csrftoken = getCookie('csrftoken');
+
+    request.open('GET', "/");
+    request.setRequestHeader("X-CSRFToken", csrftoken);
+    request.onload = () => {
+      menulist = document.querySelector('#menulist')
+      menulist.innerHTML = request.responseText;
+      menulist.innerHTML = menulist.querySelector('#menu' + menutype).innerHTML;
+    }
+    request.send()
+
+  }
+
 
   // add to cart
   function add_cart(button){

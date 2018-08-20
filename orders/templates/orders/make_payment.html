@@ -5,15 +5,14 @@ Pizza & Subs
 {% endblock %}
 
 {% block body %}
-{{status}} "_"
 
-{{test}}
 
-{{token}}
 
+<h2 id="paymentstatus"></h2>
+{{status}}
 <hr>
 
-{% for paid_order in paid_orders %}
+{% for paid_order in paid_orders reversed  %}
   <h4>{{paid_order.datetime}}</h4>
   <ul>
     {% for pizza in paid_order.orderpizza.all %}
@@ -32,8 +31,19 @@ Pizza & Subs
       <li>{{dinnerplatter.dinnerplatterchoice}}</li>
     {% endfor %}
   </ul>
-  ${{ paid_order.totalprice }}
+  <h4>Order Status: {% if paid_order.completed %}Completed{% else %}Pending{% endif %}</h4>
+  <h4>Total: ${{ paid_order.totalprice }}</h4>
 {% empty %}
 No previous orders
 {% endfor %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    if("{{status}}" === "success"){
+      document.querySelector('#paymentstatus').innerHTML = "Payment Successful"
+    } else {
+      document.querySelector('#paymentstatus').innerHTML = "Payment Failed"
+    }
+  });
+</script>
 {% endblock %}
