@@ -5,20 +5,28 @@ Pizza & Subs
 {% endblock %}
 
 {% block body %}
-<div class="container">
-  <h1>Login</h1>
   {% if message %}
-  <div>
+  <div class="text-right">
     {{ message }}
   </div>
   {% endif %}
-  <div class="form-group">
+  <!-- <div class="form-group">
     <form action="{% url 'login' %}" method="post">
       {% csrf_token %}
       <input class="form-control" name="username" type="text" placeholder="User Name" autofocus/>
       <input class="form-control" name="password" type="password" placeholder="Password"/>
       <input class="btn btn-primary" type="submit" value="Login"/>
     </form>
-  </div>
+  </div> -->
+<div class="container">
+<div class="login">
+	<h1>Login</h1>
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+    	<input type="text" name="username" placeholder="Username" required="required" autofocus/>
+        <input type="password" name="password" placeholder="Password" required="required" />
+        <button type="submit" class="btn btn-primary btn-block btn-large" value="Login">Login</button>
+    </form>
+</div>
 </div>
 {% endblock %}

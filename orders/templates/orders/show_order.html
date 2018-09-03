@@ -42,7 +42,7 @@ Pizza & Subs
 
   <h2 class="makepayment">Total cost: ${{last_orders.total_cost}}</h2>
 </div>
-
+<div class="container">
 <form action="{% url 'make_payment' %}" method="POST" class="makepayment">
   {% csrf_token %}
   <input name="amount" value="{% widthratio last_orders.total_cost 1 100 %}" type="hidden">
@@ -59,7 +59,7 @@ Pizza & Subs
     data-zip-code="false">
   </script>
 </form>
-
+</div>
 <div class="container">
   <p>Please use one of the test <a href="https://stripe.com/docs/testing#cards">credit card numbers</a> in order to make payment.</p>
   supply any valid expiry date and a dummy >=3digit cvv number.

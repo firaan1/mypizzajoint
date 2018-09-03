@@ -7,7 +7,16 @@ Pizza & Subs
 {% block body %}
 
 <div class="container">
-  <div id="placedorders">
+  <div class="link" style="margin-top:20px;">
+    <a class="menubtn" id="pizza" href="#">Pizza</a>
+    <a class="menubtn" id="sub" href="#">Subs</a>
+    <a class="menubtn" id="pasta" href="#">Pasta</a>
+    <a class="menubtn" id="salad" href="#">Salad</a>
+    <a class="menubtn" id="dinnerplatter" href="#">Dinner Platter</a>
+  </div>
+</div>
+<div class="container">
+  <div id="placedorders" style="margin-top:30px;">
     <ul>
       {% for order in last_orders.order_list %}
       <li data-menutype="{{order.menutype}}" data-pk="{{order.pk}}" data-todo="delete">
@@ -33,50 +42,42 @@ Pizza & Subs
         {% elif order.menutype == "dinnerplatter" %}
           {{order.dinnerplatterchoice}}
         {% endif %}
-        <button type="button" class="btn btn-primary delete_order">delete</button>
+        <button type="button" class="btn btn-danger delete_order">delete</button>
       </li>
         {% empty %}
-        <li>No previous orders in cart</li>
+        <div class="text-right">No previous orders in cart</div>
       {% endfor %}
     </ul>
   </div>
   {% if last_orders.order_list %}
     <h3>Total: ${{last_orders.total_cost}}</h3>
-    <a href="{% url 'show_order' %}">Place Order</button>
+    <div class="link" style="margin-top:20px;">
+      <a href="{% url 'show_order' %}">Place Order</a>
+    </div>
   {% endif %}
 </div>
 
-
-
-<div class="container">
-  <div>
-    <a class="menubtn" id="pizza" href="#">Pizza</a>
-    <a class="menubtn" id="sub" href="#">Subs</a>
-    <a class="menubtn" id="pasta" href="#">Pasta</a>
-    <a class="menubtn" id="salad" href="#">Salad</a>
-    <a class="menubtn" id="dinnerplatter" href="#">Dinner Platter</a>
+<div class="selection">
+  <div class="container" id="dpizza">
+  </div>
+  <div class="container" id="dsub">
+  </div>
+  <div class="container" id="dpasta">
+  </div>
+  <div class="container" id="dsalad">
+  </div>
+  <div class="container" id="ddinnerplatter">
   </div>
 </div>
-
-<div class="container" id="dpizza">
+<div class="container">
+  <div id="menulist"></div>
 </div>
-<div class="container" id="dsub">
-</div>
-<div class="container" id="dpasta">
-</div>
-<div class="container" id="dsalad">
-</div>
-<div class="container" id="ddinnerplatter">
-</div>
-
-<div id="menulist"></div>
-
 
 
 <!-- handlebars -->
 {% verbatim %}
 <script id="select_template" type="text/x-handlebars-template">
-  <div id="d{{vartype}}" class="form-group div_order" data-menutype="{{menutype}}">
+  <div id="d{{vartype}}" class="col-sm-8 form-group div_order" data-menutype="{{menutype}}">
     <label for="s{{vartype}}">{{vartype}}</label>
     <select id="s{{vartype}}" class="form-control select_order" name="{{vartype}}" data-menutype="{{menutype}}">
       <option value="" selected disabled>Select {{vartype}}</option>
@@ -87,15 +88,16 @@ Pizza & Subs
   </div>
 </script>
 <script id="span_template" type="text/x-handlebars-template">
-  <span id="span_{{vartype}}" class="cspan" data-price=""></span>
+  <span id="span_{{vartype}}" class="col-sm-8 cspan" data-price=""></span>
 </script>
 <script id="input_template" type="text/x-handlebars-template">
-  <div class="form-group">
-    <input type="number" id="q_{{menutype}}" class="quantity" min="1" max="25" value="1" pattern="[0-9]" step="1" oninput="validity.valid||(value='');"/>
+  <div class="col-sm-8 form-group">
+    <label for="q_{{menutype}}">Quantity</label>
+    <input type="number" id="q_{{menutype}}" class="quantity form-control" min="1" max="25" value="1" pattern="[0-9]" step="1" oninput="validity.valid||(value='');"/>
   </div>
 </script>
 <script id="addbtn_template" type="text/x-handlebars-template">
-  <div class="form-group">
+  <div class="col-sm-8 form-group">
     <button type="button" class="btn btn-primary make_order" id="btn_{{menutype}}" data-menutype="{{menutype}}" data-pk="" data-quantity="" data-others="" data-todo="add">Add to Cart</button>
   </div>
 </script>

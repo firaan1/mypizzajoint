@@ -6,47 +6,54 @@ Pizza & Subs
 
 {% block body %}
 
-<div class="container menulist" id="menupizza">
-  <h2 class="menutitle">Pizzas</h2>
-  {% for ptype in pizzatype %}
-    <h4>{{ptype}}</h4>
-    <table>
-      <thead>
-        <tr>
-          <th>Topping Type</th>
-          {% for psize in pizzasize %}
-            <th>{{psize}}</th>
-          {% endfor %}
-        </tr>
-    </thead>
-    <tbody>
-      {% for ttype in toppingtype %}
-        <tr>
-          <td>{{ttype}}</td>
-            {% for psize in pizzasize %}
+<div class="container">
+  <div class=" menulist" id="menupizza">
+    <h2 class="menutitle "><b>Pizzas</b></h2>
 
-              {% for price in pizzarate %}
-                {% if ptype == price.pizzatype and ttype == price.toppingtype and psize == price.pizzasize %}
-                  <td>{{price.price}}</td>
-                {% endif %}
+    <div class="row">
+      {% for ptype in pizzatype %}</br>
+      <div class="col">
+        <h4>{{ptype}}</h4>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:66%">Topping Type</th>
+              {% for psize in pizzasize %}
+                <th style="width:33%">{{psize}}</th>
               {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+          {% for ttype in toppingtype %}
+            <tr>
+              <td>{{ttype}}</td>
+                {% for psize in pizzasize %}
 
-            {% endfor %}
-        </tr>
+                  {% for price in pizzarate %}
+                    {% if ptype == price.pizzatype and ttype == price.toppingtype and psize == price.pizzasize %}
+                      <td>{{price.price}}</td>
+                    {% endif %}
+                  {% endfor %}
+
+                {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+        </table>
+      </div>
       {% endfor %}
-    </tbody>
-    </table>
-  {% endfor %}
-</div>
-
-<div class="container menulist" id="menusub">
-  <h2 class="menutitle">Subs</h2>
+    </div>
+  </div>
+<hr>
+<div class="row">
+<div class="col menulist" id="menusub">
+  <h2 class="menutitle"><b>Subs</b></h2>
   <table>
     <thead>
       <tr>
-        <th>Subs Choice</th>
+        <th style="width:66%">Subs Choice</th>
         {% for ssize in subsize %}
-          <th>{{ssize}}</th>
+          <th style="width:33%">{{ssize}}</th>
         {% endfor %}
       </tr>
   </thead>
@@ -66,14 +73,15 @@ Pizza & Subs
   </tbody>
 </table>
 </div>
-
-<div class="container menulist" id="menupasta">
-  <h2 class="menutitle">Pastas</h2>
+<div class="col">
+<div class="row">
+<div class=" menulist" id="menupasta">
+  <h2 class="menutitle"><b>Pastas</b></h2>
   <table>
     <thead>
       <tr>
-        <th>Pasta Choice</th>
-          <th>Regular</th>
+        <th style="width:82%">Pasta Choice</th>
+          <th style="width:33%">Regular</th>
       </tr>
   </thead>
   <tbody>
@@ -86,15 +94,16 @@ Pizza & Subs
   </tbody>
 </table>
 </div>
+</div>
 
-
-<div class="container menulist" id="menusalad">
-  <h2 class="menutitle">Salads</h2>
+<div class="row">
+<div class=" menulist" id="menusalad">
+  <h2 class="menutitle"><b>Salads</b></h2>
   <table>
     <thead>
       <tr>
-        <th>Salad Choice</th>
-          <th>Regular</th>
+        <th style="width:82%">Salad Choice</th>
+          <th style="width:33%">Regular</th>
       </tr>
   </thead>
   <tbody>
@@ -107,16 +116,20 @@ Pizza & Subs
   </tbody>
 </table>
 </div>
+</div>
+</div>
+</div>
+<hr>
 
-
-<div class="container menulist" id="menudinnerplatter">
-  <h2 class="menutitle">Dinner Platters</h2>
-  <table>
+<div class="row">
+<div class=" menulist" id="menudinnerplatter">
+  <h2 class="menutitle"><b>Dinner Platters</b></h2>
+  <table
     <thead>
       <tr>
-        <th>Dinner Platters Choice</th>
+        <th style="width:59%">Dinner Platters Choice</th>
         {% for ssize in dinnerplattersize %}
-          <th>{{ssize}}</th>
+          <th style="width:33%">{{ssize}}</th>
         {% endfor %}
       </tr>
   </thead>
@@ -136,7 +149,8 @@ Pizza & Subs
   </tbody>
 </table>
 </div>
-
+</div>
+</div>
 
 
 <script>
