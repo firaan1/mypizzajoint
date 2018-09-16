@@ -101,8 +101,8 @@ def add_order(menutype, pk, others, quantity, user):
 
 # Create your views here.
 def index(request):
-    if not request.user.is_authenticated:
-        return render(request, "orders/login.html", {"message" : None})
+    # if not request.user.is_authenticated:
+    #     return render(request, "orders/login.html", {"message" : None})
     context = {
         "pizzas" : PizzaRate.objects.all(),
 

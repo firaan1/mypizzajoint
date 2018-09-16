@@ -5,6 +5,7 @@ Pizza & Subs
 {% endblock %}
 
 {% block body %}
+<div class="container">
   <h1>Register</h1>
   {% if message %}
   <div>
@@ -18,7 +19,12 @@ Pizza & Subs
       <input  name="useremail" type="text" placeholder="User Email"/>
       <input  name="password" type="password" placeholder="Password"/>
       <input  name="password_retype" type="password" placeholder="Retype Password"/>
-      <input class="btn btn-primary" type="submit" value="Register"/>
+      <!-- <input class="btn btn-primary" type="submit" value="Register"/> -->
+      <div class="form-group" style="text-align:center">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register</button>
+      </div>
     </form>
+    <p style="text-align:center"><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a></p>
   </div>
+</div>
 {% endblock %}

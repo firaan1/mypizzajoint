@@ -19,14 +19,18 @@ Pizza & Subs
     </form>
   </div> -->
 <div class="container">
-<div class="login">
-	<h1>Login</h1>
+  <div class="login">
+  	<h1>Login</h1>
     <form action="{% url 'login' %}" method="post">
       {% csrf_token %}
     	<input type="text" name="username" placeholder="Username" required="required" autofocus/>
-        <input type="password" name="password" placeholder="Password" required="required" />
-        <button type="submit" class="btn btn-primary btn-block btn-large" value="Login">Login</button>
+      <input type="password" name="password" placeholder="Password" required="required" />
+      <!-- <button type="submit" class="btn btn-primary btn-block btn-large" value="Login">Login</button> -->
+      <div class="form-group" style="text-align:center">
+        <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+      </div>
     </form>
-</div>
+      <p style="text-align:center"><a href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</a></p>
+  </div>
 </div>
 {% endblock %}
