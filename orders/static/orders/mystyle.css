@@ -54,3 +54,45 @@ a:active {
 .selection{
   margin-top: 20px;
 }
+
+#selectedorder{
+	background-color: ivory;
+	border-radius: 20px;
+	color: black;
+	height: 110%;
+	background: linear-gradient( rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85) ), url('pizza_pattern.jpeg');
+	background-size: auto;
+	background-repeat: round;
+}
+
+#placedorders {
+  overflow:hidden;
+  transition:max-height 0.3s ease-out; // note that we're transitioning max-height, not height!
+  height:auto;
+  max-height:600px; // still have to hard-code a value!
+}
+#placedorders.collapsed {
+  max-height:0;
+}
+
+.scrolltable {
+  /* margin-top: 20px; */
+  height: auto;
+	max-height: 200px;
+	border: groove;
+  /* height: 350px; */
+  overflow: auto;
+}
+
+.menulist{
+	border: double;
+	padding:10px;
+	margin:10px;
+	height:100%;
+	width:100%;
+}
+
+hr.style1{
+	background: white;
+	border-top:2px double;
+}

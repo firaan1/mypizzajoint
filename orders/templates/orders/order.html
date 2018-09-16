@@ -15,9 +15,21 @@ Pizza & Subs
     <a class="menubtn" id="dinnerplatter" href="#">Dinner Platter</a>
   </div>
 </div>
-<div class="container">
+<hr>
+<div class="container" id="selectedorder">
+  <br>
+  <!-- <div style="width:100%;"> -->
+  <div style="display:inline-flex">
+    <h2 id="yourselectedorder">Selected Orders</h2>
+    <div>
+      <button type="button" class="btn btn-info" id="btn_yourselectedorder" style="border-radius:50px"><i class="fas fa-minus"></i></button>
+    </div>
+    <div>
+      <button type="button" class="btn btn-dark" id="btn_clearall" style="border-radius:50px">Clear all</button>
+    </div>
+  </div>
   <div id="placedorders" style="margin-top:30px;">
-    <ul>
+    <ul class="scrolltable">
       {% for order in last_orders.order_list %}
       <li data-menutype="{{order.menutype}}" data-pk="{{order.pk}}" data-todo="delete">
         {% if order.menutype == "pizza" %}
@@ -42,42 +54,48 @@ Pizza & Subs
         {% elif order.menutype == "dinnerplatter" %}
           {{order.dinnerplatterchoice}}
         {% endif %}
-        <button type="button" class="btn btn-danger delete_order">delete</button>
+        <div><button type="button" class="btn btn-danger delete_order">delete</button></div>
       </li>
         {% empty %}
-        <div class="text-right">No previous orders in cart</div>
+        <div class="text-center">No previous orders in cart</div>
       {% endfor %}
     </ul>
   </div>
   {% if last_orders.order_list %}
-    <h3>Total: ${{last_orders.total_cost}}</h3>
+    <h4>{{last_orders.order_list|length}} items in total cost ${{last_orders.total_cost}}</h4>
     <div class="link" style="margin-top:20px;">
       <a href="{% url 'show_order' %}">Place Order</a>
     </div>
   {% endif %}
+  <br>
 </div>
 
-<div class="selection">
-  <div class="container" id="dpizza">
+<div class="container" id="selectorder">
+
+  <div class="selection">
+    <h2 id="selectyourorder">Select Your Order</h2>
+    <div class="container" id="dpizza">
+    </div>
+    <div class="container" id="dsub">
+    </div>
+    <div class="container" id="dpasta">
+    </div>
+    <div class="container" id="dsalad">
+    </div>
+    <div class="container" id="ddinnerplatter">
+    </div>
   </div>
-  <div class="container" id="dsub">
+  <div class="container">
+    <div id="menulist"></div>
   </div>
-  <div class="container" id="dpasta">
-  </div>
-  <div class="container" id="dsalad">
-  </div>
-  <div class="container" id="ddinnerplatter">
-  </div>
-</div>
-<div class="container">
-  <div id="menulist"></div>
 </div>
 
 
 <!-- handlebars -->
 {% verbatim %}
 <script id="select_template" type="text/x-handlebars-template">
-  <div id="d{{vartype}}" class="col-sm-8 form-group div_order" data-menutype="{{menutype}}">
+  <!-- <div id="d{{vartype}}" class="col-sm-8 form-group div_order" data-menutype="{{menutype}}"> -->
+  <div id="d{{vartype}}" class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 form-group div_order" data-menutype="{{menutype}}">
     <label for="s{{vartype}}">{{vartype}}</label>
     <select id="s{{vartype}}" class="form-control select_order" name="{{vartype}}" data-menutype="{{menutype}}">
       <option value="" selected disabled>Select {{vartype}}</option>
@@ -88,17 +106,18 @@ Pizza & Subs
   </div>
 </script>
 <script id="span_template" type="text/x-handlebars-template">
-  <span id="span_{{vartype}}" class="col-sm-8 cspan" data-price=""></span>
+  <span id="span_{{vartype}}" class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 cspan" data-price=""></span>
 </script>
 <script id="input_template" type="text/x-handlebars-template">
-  <div class="col-sm-8 form-group">
+  <!-- <div class="col-sm-8 form-group"> -->
+  <div class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 form-group">
     <label for="q_{{menutype}}">Quantity</label>
     <input type="number" id="q_{{menutype}}" class="quantity form-control" min="1" max="25" value="1" pattern="[0-9]" step="1" oninput="validity.valid||(value='');"/>
   </div>
 </script>
 <script id="addbtn_template" type="text/x-handlebars-template">
-  <div class="col-sm-8 form-group">
-    <button type="button" class="btn btn-primary make_order" id="btn_{{menutype}}" data-menutype="{{menutype}}" data-pk="" data-quantity="" data-others="" data-todo="add">Add to Cart</button>
+  <div class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 form-group">
+    <button type="button" class="btn btn-info make_order" id="btn_{{menutype}}" data-menutype="{{menutype}}" data-pk="" data-quantity="" data-others="" data-todo="add"><i class="fas fa-cart-plus"></i> Add to Cart</button>
   </div>
 </script>
 
@@ -117,6 +136,23 @@ Pizza & Subs
   input_template = Handlebars.compile(document.querySelector('#input_template').innerHTML);
   addbtn_template = Handlebars.compile(document.querySelector('#addbtn_template').innerHTML);
 
+  // button function to minimize and maximize
+  btn_yourselectedorder = document.querySelector('#btn_yourselectedorder');
+  btn_yourselectedorder.onclick = () => {
+    document.querySelector('#placedorders').classList.toggle('collapsed');
+    if(btn_yourselectedorder.innerHTML == '<i class="fas fa-minus"></i>'){
+      btn_yourselectedorder.innerHTML = '<i class="fas fa-plus"></i>';
+    } else {
+      btn_yourselectedorder.innerHTML = '<i class="fas fa-minus"></i>';
+    }
+  }
+
+  // clear all button function
+  document.querySelector('#btn_clearall').onclick = () => {
+    document.querySelectorAll('.delete_order').forEach(button => {
+      button.click();
+    });
+  }
 
   // delete previous orders
   const delete_order = document.querySelectorAll('.delete_order')
@@ -131,9 +167,9 @@ Pizza & Subs
 	location.reload();
       };
       const data = new FormData();
-      data.append('menutype',button.parentElement.dataset.menutype);
-      data.append('pk',button.parentElement.dataset.pk);
-      data.append('todo',button.parentElement.dataset.todo);
+      data.append('menutype',button.parentElement.parentElement.dataset.menutype);
+      data.append('pk',button.parentElement.parentElement.dataset.pk);
+      data.append('todo',button.parentElement.parentElement.dataset.todo);
       request.send(data);
     };
     });
@@ -141,11 +177,22 @@ Pizza & Subs
     ////////////////////////////////////////////
 
     ////////////////////////////////////////////
+    // remove heading
+    document.querySelector('#selectyourorder').style.display = "none";
+
     // menu anchors
     document.querySelectorAll('.menubtn').forEach(anchor => {
       const anchor_div = document.querySelector('#d' + anchor.id);
       anchor_div.style.display = "none";
+
       anchor.onclick = () => {
+
+        if(btn_yourselectedorder.innerHTML == '<i class="fas fa-minus"></i>'){
+          btn_yourselectedorder.click();
+        }
+
+        // display heading
+        document.querySelector('#selectyourorder').style.display = "block";
 
         menutype = anchor.id;
 
@@ -227,6 +274,8 @@ Pizza & Subs
       menulist = document.querySelector('#menulist')
       menulist.innerHTML = request.responseText;
       menulist.innerHTML = menulist.querySelector('#menu' + menutype).innerHTML;
+      menulist.setAttribute('class', 'menulist');
+      menulist.querySelector('.menutitle').innerHTML += '<hr class="style1"/>';
     }
     request.send()
 

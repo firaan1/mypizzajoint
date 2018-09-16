@@ -8,7 +8,7 @@ Pizza & Subs
 <div class="container">
   <h1>Order Confirmation</h1>
   <div id="placedorders">
-    <ul>
+    <ul class="scrolltable">
       {% for order in last_orders.order_list %}
       <li data-menutype="{{order.menutype}}" data-pk="{{order.pk}}" data-todo="delete">
         {% if order.menutype == "pizza" %}
@@ -39,8 +39,8 @@ Pizza & Subs
       {% endfor %}
     </ul>
   </div>
-
-  <h2 class="makepayment">Total cost: ${{last_orders.total_cost}}</h2>
+  <h3 class="makepayment">Items: {{last_orders.order_list|length}}</h3>
+  <h3 class="makepayment">Cost: ${{last_orders.total_cost}}</h3>
 </div>
 <div class="container">
 <form action="{% url 'make_payment' %}" method="POST" class="makepayment">

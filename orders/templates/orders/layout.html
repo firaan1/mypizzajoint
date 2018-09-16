@@ -19,18 +19,20 @@
     <div class="container header">
       <form>
         <div class="form-group">
-          <button type="button" class="btn btn-primary btnloc" id="btn_home" data-urlfor="{% url 'index' %}">Home</button>
+          <button type="button" class="btn btn-danger btnloc" id="btn_home" data-urlfor="{% url 'index' %}">Home</button>
           {% if request.user.username %}
-            <button type="button" class="btn btn-primary btnloc" id="btn_order" data-urlfor="{% url 'order' %}">Order</button>
-            <button type="button" class="btn btn-primary btnloc" id="btn_cart" data-urlfor="{% url 'show_order' %}"><i class="fas fa-shopping-cart"></i> Cart</button>
+            <button type="button" class="btn btn-danger btnloc" id="btn_order" data-urlfor="{% url 'order' %}">Order</button>
+            <button type="button" class="btn btn-danger btnloc" id="btn_cart" data-urlfor="{% url 'show_order' %}"><i class="fas fa-shopping-cart"></i> Cart</button>
           {% endif %}
-          <button type="button" class="btn btn-primary loggedout btnloc" id="btn_login" data-urlfor="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</button>
-          <button type="button" class="btn btn-primary loggedin btnloc" id="btn_logout" data-urlfor="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</button>
-          <button type="button" class="btn btn-primary loggedout btnloc" id="btn_register" data-urlfor="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</button>
+          <button type="button" class="btn btn-danger loggedout btnloc" id="btn_login" data-urlfor="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</button>
+          <button type="button" class="btn btn-danger loggedin btnloc" id="btn_logout" data-urlfor="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</button>
+          <button type="button" class="btn btn-danger loggedout btnloc" id="btn_register" data-urlfor="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</button>
           <button type="button" class="btn btn-warning" id="btn_user" disabled style="opacity:100">{% if request.user.username %}<i class="fas fa-user"></i> {{request.user.username}}{% else %}<i class="far fa-user"></i> Guest{% endif %}</button>
         </div>
     </form>
     </div>
+    
+    <h1>Pizza & Subs</h1>
 
     {% block body %}
     {% endblock %}

@@ -8,7 +8,7 @@ Pizza & Subs
 
 <div class="container">
   <div class=" menulist" id="menupizza">
-    <h2 class="menutitle "><b>Pizzas</b></h2>
+    <h2 class="menutitle"><b>Pizzas</b></h2>
 
     <div class="row">
       {% for ptype in pizzatype %}</br>
@@ -155,6 +155,9 @@ Pizza & Subs
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.menutitle').forEach(event => {
+      event.innerHTML += '<hr class="style1">'
+    });
   });
 </script>
 
