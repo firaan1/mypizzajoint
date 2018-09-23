@@ -15,7 +15,7 @@ body {
 	width:300px;
 	height:300px;
 }
-h1 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
+h1,h2 { color: #fff; text-shadow: 0 0 10px rgba(0,0,0,0.3); letter-spacing:1px; text-align:center; }
 
 input {
 	width: 100%;
@@ -42,12 +42,12 @@ input {
   text-decoration: none;
 }
 
-a:hover {
+.link a:hover {
   background-color: #ce0606;
   cursor: pointer;
 }
 
-a:active {
+.link a:active {
   box-shadow: none;
   top: 5px;
 }
@@ -67,7 +67,7 @@ a:active {
 
 #placedorders {
   overflow:hidden;
-  transition:max-height 0.3s ease-out; // note that we're transitioning max-height, not height!
+  transition:max-height 0.5s ease-out; // note that we're transitioning max-height, not height!
   height:auto;
   max-height:600px; // still have to hard-code a value!
 }
@@ -95,4 +95,11 @@ a:active {
 hr.style1{
 	background: white;
 	border-top:2px double;
+}
+
+.btnloc{
+	background-color:#ce0606;
+}
+.btnloc:hover{
+	background-color: red;
 }

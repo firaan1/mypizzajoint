@@ -15,7 +15,11 @@ Pizza & Subs
     <a class="menubtn" id="dinnerplatter" href="#">Dinner Platter</a>
   </div>
 </div>
-<hr>
+<br><br>
+<div class="container" id="selecttext">
+  <p style="text-align:center"><i class="far fa-arrow-alt-circle-up fa-2x"></i> Select your favorite category <i class="far fa-arrow-alt-circle-up fa-2x"></i></p>
+</div>
+<br>
 <div class="container" id="selectedorder">
   <br>
   <!-- <div style="width:100%;"> -->
@@ -186,6 +190,15 @@ Pizza & Subs
       anchor_div.style.display = "none";
 
       anchor.onclick = () => {
+
+        // removing selected orders
+        document.querySelector('#selecttext').style.display = "none";
+
+        // adding color to category select
+        document.querySelectorAll('.menubtn').forEach(anchor1 => {
+          anchor1.style.backgroundColor = "#331a00";
+        })
+        anchor.style.backgroundColor = "#ce0606";
 
         if(btn_yourselectedorder.innerHTML == '<i class="fas fa-minus"></i>'){
           btn_yourselectedorder.click();
