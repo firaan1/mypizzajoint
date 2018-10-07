@@ -132,13 +132,13 @@ class OrderDinnerPlatter(models.Model):
 
 class PlacedOrder(models.Model):
     user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "placedorder_user", null = True)
-    orderpizza = models.ManyToManyField(OrderPizza, related_name = "order_pizza")
-    ordersub =  models.ManyToManyField(OrderSub, related_name = "order_sub")
-    orderpasta = models.ManyToManyField(OrderPasta, related_name = "order_pasta")
-    ordersalad =  models.ManyToManyField(OrderSalad, related_name = "order_salad")
-    orderdinnerplatter =  models.ManyToManyField(OrderDinnerPlatter, related_name = "order_dinnerplatter")
+    orderpizza = models.ManyToManyField(OrderPizza, related_name = "order_pizza", blank = True)
+    ordersub =  models.ManyToManyField(OrderSub, related_name = "order_sub", blank = True)
+    orderpasta = models.ManyToManyField(OrderPasta, related_name = "order_pasta", blank = True)
+    ordersalad =  models.ManyToManyField(OrderSalad, related_name = "order_salad", blank = True)
+    orderdinnerplatter =  models.ManyToManyField(OrderDinnerPlatter, related_name = "order_dinnerplatter", blank = True)
     totalprice =  models.DecimalField(max_digits = 6, decimal_places = 2, default = 0)
-    datetime = models.DateTimeField(default = datetime.datetime(2018, 8, 20, 11, 59, 19, 963465))
+    datetime = models.DateTimeField(auto_now_add=True)
     completed = models.BooleanField(default = False)
     def clean(self):
         if not (self.orderpizza or self.ordersub or self.orderpasta or self.ordersalad or self.orderdinnerplatter):

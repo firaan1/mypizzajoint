@@ -1,46 +1,47 @@
 {% extends "orders/layout.html" %}
 
 {% block title %}
-Pizza & Subs
+MyPizzajoint: Make Payment
 {% endblock %}
 
 {% block body %}
 
 
+<div class="container">
+  <h2 id="paymentstatus"></h2>
+  <hr>
 
-<h2 id="paymentstatus"></h2>
-{{status}}
-<hr>
-
-{% for paid_order in paid_orders reversed  %}
-  <h4>{{paid_order.datetime}}</h4>
-  <ul>
-    {% for pizza in paid_order.orderpizza.all %}
-      <li>{{pizza.pizzachoice}}</li>
-    {% endfor %}
-    {% for sub in paid_order.ordersub.all %}
-      <li>{{sub.subchoice}}</li>
-    {% endfor %}
-    {% for pasta in paid_order.orderpasta.all %}
-      <li>{{pasta.pastachoice}}</li>
-    {% endfor %}
-    {% for salad in paid_order.ordersalad.all %}
-      <li>{{salad.saladchoice}}</li>
-    {% endfor %}
-    {% for dinnerplatter in paid_order.orderdinnerplatter.all %}
-      <li>{{dinnerplatter.dinnerplatterchoice}}</li>
-    {% endfor %}
-  </ul>
-  <h4>Order Status: {% if paid_order.completed %}Completed{% else %}Pending{% endif %}</h4>
-  <h4>Total: ${{ paid_order.totalprice }}</h4>
-{% empty %}
-No previous orders
-{% endfor %}
-
+  {% for paid_order in paid_orders reversed  %}
+    <h4>{{paid_order.datetime}}</h4>
+    <ul>
+      {% for pizza in paid_order.orderpizza.all %}
+        <li>{{pizza.pizzachoice}}</li>
+      {% endfor %}
+      {% for sub in paid_order.ordersub.all %}
+        <li>{{sub.subchoice}}</li>
+      {% endfor %}
+      {% for pasta in paid_order.orderpasta.all %}
+        <li>{{pasta.pastachoice}}</li>
+      {% endfor %}
+      {% for salad in paid_order.ordersalad.all %}
+        <li>{{salad.saladchoice}}</li>
+      {% endfor %}
+      {% for dinnerplatter in paid_order.orderdinnerplatter.all %}
+        <li>{{dinnerplatter.dinnerplatterchoice}}</li>
+      {% endfor %}
+    </ul>
+    <h4>Order Status: {% if paid_order.completed %}Completed{% else %}Pending{% endif %}</h4>
+    <h4>Total: ${{ paid_order.totalprice }}</h4>
+  {% empty %}
+  No previous orders
+  {% endfor %}
+</div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     if("{{status}}" === "success"){
       document.querySelector('#paymentstatus').innerHTML = "Payment Successful"
+    } else if("{{status}}" === "get"){
+      document.querySelector('#paymentstatus').innerHTML = ""
     } else {
       document.querySelector('#paymentstatus').innerHTML = "Payment Failed"
     }

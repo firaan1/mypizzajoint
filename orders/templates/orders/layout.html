@@ -23,8 +23,12 @@
           {% if request.user.username %}
             <button type="button" class="btn btn-danger btnloc" id="btn_order" data-urlfor="{% url 'order' %}"><i class="fas fa-ticket-alt"></i> Order</button>
             <button type="button" class="btn btn-danger btnloc" id="btn_cart" data-urlfor="{% url 'show_order' %}"><i class="fas fa-shopping-cart"></i> Cart</button>
+            <button type="button" class="btn btn-danger btnloc" id="btn_histories" data-urlfor="{% url 'make_payment' %}"><i class="fas fa-shopping-cart"></i> Histories</button>
           {% endif %}
           <button type="button" class="btn btn-danger loggedout btnloc" id="btn_login" data-urlfor="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</button>
+          {% if request.user.is_staff %}
+          <button type="button" class="btn btn-danger loggedin btnloc" id="btn_admin" data-urlfor="{% url 'admin:index' %}"><i class="fas fa-user-tie"></i> Admin</button>
+          {% endif %}
           <button type="button" class="btn btn-danger loggedin btnloc" id="btn_logout" data-urlfor="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</button>
           <button type="button" class="btn btn-danger loggedout btnloc" id="btn_register" data-urlfor="{% url 'register' %}"><i class="fas fa-user-plus"></i> Register</button>
           <button type="button" class="btn btn-warning" id="btn_user" disabled style="opacity:100">{% if request.user.username %}<i class="fas fa-user"></i> {{request.user.username}}{% else %}<i class="far fa-user"></i> Guest{% endif %}</button>
@@ -32,8 +36,7 @@
     </form>
     </div>
 
-    <h1>Pizza & Subs</h1>
-
+    <h1>MyPizzajoint</h1>
     {% block body %}
     {% endblock %}
     <script type="text/javascript">

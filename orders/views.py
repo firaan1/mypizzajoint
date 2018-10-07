@@ -141,7 +141,6 @@ def show_order(request):
 @login_required(login_url='/login')
 def make_payment(request):
     status = None
-    test = "none"
     if request.method == "POST":
         stripe.api_key = "sk_test_tSFhKEyCfNka1V4A71VZWbWc"
         token = request.POST['stripeToken']
@@ -152,11 +151,12 @@ def make_payment(request):
             test = add_paid_orders(request);
         except Exception as e:
             status = str(e)
+    if not status:
+        status = "get"
     paid_orders = PlacedOrder.objects.filter(user = request.user)
     context = {
     "paid_orders" : paid_orders,
     "status" : status,
-    "test" : test
     }
     return render(request, "orders/make_payment.html", context)
 
@@ -190,7 +190,7 @@ def order(request):
 @login_required(login_url="/login")
 def change_order(request):
     if request.method == "GET":
-        return HttpResponse("Error")
+        return HttpResponseRedirect(reverse('index'))
     user = request.user
     menutype = request.POST['menutype']
     pk = request.POST['pk']
