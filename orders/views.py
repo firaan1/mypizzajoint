@@ -101,8 +101,6 @@ def add_order(menutype, pk, others, quantity, user):
 
 # Create your views here.
 def index(request):
-    # if not request.user.is_authenticated:
-    #     return render(request, "orders/login.html", {"message" : None})
     context = {
         "pizzas" : PizzaRate.objects.all(),
 
@@ -126,7 +124,6 @@ def index(request):
             "dinnerplattersize" :  DinnerPlatterRate.dinnerplattersize.get_queryset(),
             "dinnerplatterchoice" :  DinnerPlatterRate.dinnerplatterchoice.get_queryset()
     }
-    # return HttpResponse("Project 3: TODO")
     return render(request, "orders/index.html", context)
 
 @login_required(login_url='/login')

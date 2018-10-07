@@ -22,9 +22,8 @@ MyPizzajoint: Order
 <br>
 <div class="container" id="selectedorder">
   <br>
-  <!-- <div style="width:100%;"> -->
   <div style="display:inline-flex">
-    <h2 id="yourselectedorder">Selected Orders</h2>
+    <h2 id="yourselectedorder" style="color:black">Selected Orders</h2>
     <div>
       <button type="button" class="btn btn-info" id="btn_yourselectedorder" style="border-radius:50px"><i class="fas fa-minus"></i></button>
     </div>
@@ -98,7 +97,6 @@ MyPizzajoint: Order
 <!-- handlebars -->
 {% verbatim %}
 <script id="select_template" type="text/x-handlebars-template">
-  <!-- <div id="d{{vartype}}" class="col-sm-8 form-group div_order" data-menutype="{{menutype}}"> -->
   <div id="d{{vartype}}" class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 form-group div_order" data-menutype="{{menutype}}">
     <label for="s{{vartype}}">{{vartype}}</label>
     <select id="s{{vartype}}" class="form-control select_order" name="{{vartype}}" data-menutype="{{menutype}}">
@@ -113,7 +111,6 @@ MyPizzajoint: Order
   <span id="span_{{vartype}}" class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 cspan" data-price=""></span>
 </script>
 <script id="input_template" type="text/x-handlebars-template">
-  <!-- <div class="col-sm-8 form-group"> -->
   <div class="col-xl-4 offset-xl-4 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 form-group">
     <label for="q_{{menutype}}">Quantity</label>
     <input type="number" id="q_{{menutype}}" class="quantity form-control" min="1" max="25" value="1" pattern="[0-9]" step="1" oninput="validity.valid||(value='');"/>

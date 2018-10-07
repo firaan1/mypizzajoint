@@ -28,11 +28,6 @@ class SubChoice(models.Model):
     def __str__(self):
         return f"{self.subchoice}"
 
-# class SubExtraChoice(models.Model):
-#     subextrachoice = models.CharField(max_length = 64)
-#     def __str__(self):
-#         return f"{self.subextrachoice}"
-
 class DinnerPlatterChoice(models.Model):
     dinnerplatterchoice = models.CharField(max_length = 64)
     def __str__(self):
@@ -63,7 +58,7 @@ class SubExtraRate(models.Model):
     class Meta:
         unique_together = ["subextrachoice"]
     def __str__(self):
-        return f"{self.subextrachoice} subextras cost ${self.price}"
+        return f"{self.subextrachoice}"
 
 class PastaRate(models.Model):
     pastachoice = models.CharField(max_length = 64)
@@ -95,7 +90,7 @@ class OrderPizza(models.Model):
     def test(self):
         return "xx"
     def __str__(self):
-        return f"{self.user} : {self.pizzachoice} with {self.toppingchoice}"
+        return f"{self.user} : {self.pizzachoice} with {self.display_toppingchoice()}"
 
 class OrderSub(models.Model):
     user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "sub_user", null = True)
@@ -103,8 +98,10 @@ class OrderSub(models.Model):
     subchoice = models.ForeignKey(SubRate, on_delete = models.SET_NULL, related_name = "sub_choice", null = True)
     subextrachoice = models.ManyToManyField(SubExtraRate, related_name = "subextra_choice")
     paid = models.BooleanField(default = False)
+    def display_subchoice(self):
+        return ", ".join(s.subextrachoice for s in self.subextrachoice.all())
     def __str__(self):
-        return f"{self.user} : {self.subchoice} with {self.subextrachoice}"
+        return f"{self.user} : {self.subchoice} with {self.display_subchoice()}"
 
 class OrderPasta(models.Model):
     user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "pasta_user", null = True)
@@ -148,4 +145,4 @@ class PlacedOrder(models.Model):
         for i in self.orderpizza, self.ordersub, self.orderpasta, self.ordersalad, self.orderdinnerplatter:
             if i:
                 count += 1
-        return f"user {self.user} ordered in f{i} categories"
+        return f"{self.user}'s order at {self.datetime}; Order completed: {self.completed}"
