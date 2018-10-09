@@ -139,7 +139,7 @@ class DeliveryAddress(models.Model):
 
 class PlacedOrder(models.Model):
     user = models.ForeignKey(User, on_delete = models.SET_NULL, related_name = "placedorder_user", null = True)
-    deliveryaddress = models.ForeignKey(DeliveryAddress, on_delete = models.SET_NULL, null = True, related_name = "delivery_address")
+    deliveryaddress = models.ForeignKey(DeliveryAddress, on_delete = models.SET_NULL, null = True, related_name = "delivery_address", blank = True)
     orderpizza = models.ManyToManyField(OrderPizza, related_name = "order_pizza", blank = True)
     ordersub =  models.ManyToManyField(OrderSub, related_name = "order_sub", blank = True)
     orderpasta = models.ManyToManyField(OrderPasta, related_name = "order_pasta", blank = True)
