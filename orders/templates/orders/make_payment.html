@@ -30,8 +30,9 @@ MyPizzajoint: Make Payment
         <li>{{dinnerplatter.dinnerplatterchoice}}</li>
       {% endfor %}
     </ul>
-    <h4>Order Status: {% if paid_order.completed %}Completed{% else %}Pending{% endif %}</h4>
-    <h4>Total: ${{ paid_order.totalprice }}</h4>
+    <p>Delivery to: {{paid_order.deliveryaddress}}</p>
+    <p>Order Status: {% if paid_order.completed %}Completed{% else %}Pending{% endif %}</p>
+    <p>Total: ${{ paid_order.totalprice }}</p>
   {% empty %}
   No previous orders
   {% endfor %}

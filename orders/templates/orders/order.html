@@ -433,6 +433,7 @@ MyPizzajoint: Order
     menutypeevent.onchange = () => {
       init_state = true;
       btn_disabled = true;
+      menutype_quantity.value = 1;
 
       if(menutypeevent.name === "toppingtype"){
         selected_toppings = null;
@@ -536,7 +537,7 @@ MyPizzajoint: Order
 
         if(selected_price && selected_pk){
           menutype_price.setAttribute('data-price', selected_price)
-          menutype_price.innerHTML = "Price: $" + selected_price;
+          menutype_price.innerHTML = "Price: $" + Math.round(selected_price * 100) / 100;
           btn_menutype.setAttribute('data-pk',selected_pk);
           btn_disabled = false;
         } else {
@@ -562,7 +563,7 @@ MyPizzajoint: Order
             });
           });
           current_price = menutype_price.dataset.price;
-          menutype_price.innerHTML = "Price: $" + String(Number(current_price) + extra_price);
+          menutype_price.innerHTML = "Price: $" + Math.round(Number(current_price) + extra_price * 100) / 100;
 
         } else {
           btn_menutype.setAttribute('data-others',"");
@@ -593,7 +594,7 @@ MyPizzajoint: Order
         btn_menutype.disabled = true;
       }
       current_price = menutype_price.dataset.price
-      menutype_price.innerHTML = "Price: $" + (current_price * menutype_quantity.value);
+      menutype_price.innerHTML = "Price: $" + Math.round((current_price * menutype_quantity.value) * 100) / 100;
     }
     btn_menutype.setAttribute('data-quantity', menutype_quantity.value)
   }

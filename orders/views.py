@@ -41,9 +41,9 @@ def user_cost(object):
         order_list.append(order)
     return dict(order_list = order_list, total_cost = total_cost)
 
-def add_paid_orders(object):
+def add_paid_orders(object, address_to_delivery):
     last_orders = user_cost(object)
-    placed_order = PlacedOrder(user = object.user)
+    placed_order = PlacedOrder(user = object.user, deliveryaddress = DeliveryAddress.objects.get(pk = address_to_delivery))
     placed_order.save()
     pizzas = [s for s in OrderPizza.objects.filter(user = object.user, paid = False)]
     subs = [s for s in OrderSub.objects.filter(user = object.user, paid = False)]
@@ -128,10 +128,23 @@ def index(request):
 
 @login_required(login_url='/login')
 def show_order(request):
+    if request.method == "POST":
+        todo = request.POST['todo']
+        if todo == "address":
+            new_address = request.POST['new_address']
+            new_number = request.POST['new_number']
+            address = DeliveryAddress(user = request.user, address = new_address, phone_number = new_number)
+            address.save()
+        elif todo == "deleteaddress":
+            address_pk = request.POST['address_pk']
+            delete_address = DeliveryAddress.objects.filter(user = request.user, pk = address_pk).last()
+            if delete_address:
+                delete_address.delete()
     last_orders = user_cost(request)
     context = {
     "last_orders" : last_orders,
-    "user_email" : request.user.email
+    "user_email" : request.user.email,
+    "deliveryaddress" : DeliveryAddress.objects.filter(user = request.user).order_by('-pk')
     }
     return render(request, "orders/show_order.html", context)
 
@@ -142,10 +155,11 @@ def make_payment(request):
         stripe.api_key = "sk_test_tSFhKEyCfNka1V4A71VZWbWc"
         token = request.POST['stripeToken']
         amount = request.POST['amount']
+        address_to_delivery = request.POST['address_to_delivery']
         try:
             charge = stripe.Charge.create( amount=int(amount), currency='usd', description='charge', source=token)
             status = "success"
-            test = add_paid_orders(request);
+            test = add_paid_orders(request, address_to_delivery);
         except Exception as e:
             status = str(e)
     if not status:
